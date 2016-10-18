@@ -1,0 +1,11 @@
+# IDE
+.idea
+
+# build dir
+build
+
+# test dir
+input
+
+# libraries
+test/catch.hpp
