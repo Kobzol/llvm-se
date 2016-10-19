@@ -1,9 +1,10 @@
 #include "debug_util.h"
 
 #include <llvm/IR/BasicBlock.h>
-#include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/IntrinsicInst.h>
+#include <llvm/IR/Module.h>
 
 #include "program/function.h"
 
@@ -57,9 +58,34 @@ const llvm::Function* DebugUtil::findVarScope(const llvm::Value* value)
     return nullptr;
 }
 
+std::unique_ptr<DebugInfo> DebugUtil::getGlobalVarDebugInfo(const llvm::GlobalVariable* global)
+{
+    const llvm::Module* module = global->getParent();
+    if (llvm::NamedMDNode* cu = module->getNamedMetadata("llvm.dbg.cu"))
+    {
+        for (unsigned i = 0, e = cu->getNumOperands(); i != e; ++i)
+        {
+            auto* compileUnit = llvm::cast<llvm::DICompileUnit>(cu->getOperand(i));
+            for (llvm::DIGlobalVariable* globalDI : compileUnit->getGlobalVariables())
+            {
+                if (globalDI->getVariable() == global)
+                {
+                    return std::make_unique<DebugInfo>(globalDI);
+                }
+            }
+        }
+    }
+
+    return std::make_unique<DebugInfo>();
+}
+
 std::unique_ptr<DebugInfo> DebugUtil::getVarDebugInfo(const llvm::Value* value)
 {
-    // TODO handle globals as well
+    if (const llvm::GlobalVariable* global = llvm::dyn_cast<llvm::GlobalVariable>(value))
+    {
+        return this->getGlobalVarDebugInfo(global);
+    }
+
     const llvm::Function* function = this->findVarScope(value);
     if (!function)
     {

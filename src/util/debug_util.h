@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <llvm/IR/DebugInfoMetadata.h>
 
 #include "singleton.h"
 #include "debug_info.h"
@@ -27,6 +28,7 @@ private:
     const llvm::MDNode* findVarInFunction(const llvm::Function* function, const llvm::Value* value);
     const llvm::Function* findVarScope(const llvm::Value* value);
     std::unique_ptr<DebugInfo> getVarDebugInfo(const llvm::Value* value);
+    std::unique_ptr<DebugInfo> getGlobalVarDebugInfo(const llvm::GlobalVariable* global);
 
     DebugInfo* getFromCache(const llvm::Value* value);
 
