@@ -5,7 +5,7 @@
 Context CTX;
 std::unique_ptr<llvm::Module> moduleHolder;
 
-void handleCode(std::string code)
+void handleCode(const std::string& code)
 {
     moduleHolder = MemoryCompiler::get().compile(code);
     assert(moduleHolder.get());

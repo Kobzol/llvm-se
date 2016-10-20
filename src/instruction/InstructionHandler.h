@@ -4,10 +4,10 @@ namespace llvm {
     class Instruction;
 }
 
-class Function;
+class Path;
 
 class InstructionHandler
 {
 public:
-    virtual void handle(Function* function, llvm::Instruction* instruction) = 0;
+    virtual void handle(Path* path, llvm::Instruction* instruction) = 0;
 };

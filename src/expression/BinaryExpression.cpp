@@ -1,6 +1,6 @@
 #include "BinaryExpression.h"
 
-#include "util/logger.h"
+#include "util/Logger.h"
 
 BinaryExpression::BinaryExpression(llvm::Value* value, Expression* lhs, Expression* rhs)
     : Expression(value), lhs(lhs), rhs(rhs)

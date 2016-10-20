@@ -1,14 +1,15 @@
 #include "LoadExpression.h"
 
-#include "path.h"
-#include "util/logger.h"
+#include "MemoryLocation.h"
+#include "path/Path.h"
+#include "util/Logger.h"
 
-LoadExpression::LoadExpression(llvm::Value* value, Expression* source): Expression(value), source(source)
+LoadExpression::LoadExpression(llvm::Value* value, MemoryLocation* source): Expression(value), source(source)
 {
 
 }
 
-Expression* LoadExpression::getSource() const
+MemoryLocation* LoadExpression::getSource() const
 {
     return this->source;
 }

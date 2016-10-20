@@ -1,17 +1,17 @@
 #include "GetElementPtr.h"
 
 #include <llvm/IR/Module.h>
-#include <expression/ExprBuilder.h>
 
+#include "expression/ExprBuilder.h"
 #include "expression/IndexExpression.h"
-#include "program/function.h"
+#include "program/Function.h"
+#include "path/Path.h"
 
-void GetElementPtr::handle(Function* function, llvm::Instruction* instruction)
+void GetElementPtr::handle(Path* path, llvm::Instruction* instruction)
 {
     llvm::GetElementPtrInst* gep = static_cast<llvm::GetElementPtrInst*>(instruction);
 
-    Path* path = function->getActivePath();
-    ExprBuilder builder(path);
+    ExprBuilder builder(path->getState());
 
     std::shared_ptr<IndexExpression> index;
     int64_t constantIndex = 0;
@@ -31,8 +31,6 @@ void GetElementPtr::handle(Function* function, llvm::Instruction* instruction)
 
         index = std::make_shared<IndexExpression>(gep, gep->getPointerOperand(), indices);*/
     }
-
-    path->setIndexer(index);
 }
 
 bool GetElementPtr::getConstantIndex(llvm::GetElementPtrInst* gep, int64_t* result)

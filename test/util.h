@@ -2,9 +2,9 @@
 
 #include "catch.hpp"
 
-#include "context.h"
+#include "Context.h"
 
 extern Context CTX;
 extern std::unique_ptr<llvm::Module> moduleHolder;
 
-void handleCode(std::string code);
+void handleCode(const std::string& code);

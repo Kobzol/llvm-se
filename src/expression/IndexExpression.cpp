@@ -1,6 +1,6 @@
 #include "IndexExpression.h"
 
-#include "path.h"
+#include "path/Path.h"
 
 IndexExpression::IndexExpression(llvm::Value* value, const llvm::Value* pointer, int64_t index)
     : Expression(value), index(index), pointer(pointer)

@@ -69,41 +69,48 @@ set(CLANG_LIB
 )
 
 add_library(src
-    src/context.cpp
-    src/pass.cpp
-    src/path.cpp
+    src/Context.cpp
+    src/Pass.cpp
+    src/path/Path.cpp
     src/expression/ExprBuilder.cpp
-    src/instruction/store.cpp
-    src/program/declaration.cpp
-    src/program/function.cpp
-    src/solver/solver.cpp
-    src/analysis/Analyser.cpp
-    src/util/debug_util.cpp
+    src/instruction/Store.cpp
+    src/program/Declaration.cpp
+    src/program/Function.cpp
+    src/solver/Solver.cpp
+    src/util/DebugUtil.cpp
     src/expression/Expression.cpp
     src/expression/IntConstant.cpp
     src/expression/UnknownExpression.cpp
     src/expression/BinaryExpression.cpp
     src/expression/AddExpression.cpp
-    src/instruction/alloca.cpp
-    src/util/logger.cpp
+    src/instruction/Alloca.cpp
+    src/util/Logger.cpp
     src/expression/LoadExpression.cpp
-    src/instruction/branch.cpp
+    src/instruction/Branch.cpp
     src/expression/CmpExpression.cpp
     src/expression/MemoryLocation.cpp
-        src/expression/Scalar.cpp
-    src/util/debug_info.cpp
+    src/util/DebugInfo.cpp
     src/util/compile/MemoryCompileAction.cpp
-    src/util/compile/MemoryCompiler.cpp src/expression/Array.h src/expression/Array.cpp src/instruction/GetElementPtr.cpp src/instruction/GetElementPtr.h src/instruction/InstructionHandler.cpp src/expression/IndexExpression.cpp src/expression/IndexExpression.cpp src/expression/IndexExpression.h)
+    src/util/compile/MemoryCompiler.cpp
+    src/instruction/GetElementPtr.cpp
+    src/expression/IndexExpression.cpp
+    src/path/SymbolicState.cpp
+    src/path/WrapperState.cpp
+    src/path/PathGroup.cpp
+    src/instruction/InstructionDispatcher.cpp
+    src/expression/Variable.cpp
+)
 
 # LLVM pass
-add_library(llvmSE SHARED register_pass.cpp)
+add_library(llvmSE SHARED RegisterPass.cpp)
 target_link_libraries(llvmSE src)
 target_link_libraries(llvmSE ${Z3_LIB})
 
 # Test
 set(TEST_SOURCE_FILES
         test/run_test.cpp
-        test/test_expression.cpp test/util.cpp)
+        test/test_expression.cpp
+        test/util.cpp)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)

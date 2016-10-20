@@ -1,7 +1,7 @@
-#include <util/logger.h>
+#include <util/Logger.h>
 #include "IntConstant.h"
 
-#include "path.h"
+#include "path/Path.h"
 
 IntConstant::IntConstant(llvm::Value* value, int64_t constant)
         : Expression(value), constant(constant)

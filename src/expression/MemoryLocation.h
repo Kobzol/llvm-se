@@ -5,7 +5,7 @@
 class MemoryLocation : public Expression
 {
 public:
-    MemoryLocation(llvm::Value* value, Expression* content, std::string identifier);
+    MemoryLocation(llvm::Value* value, Expression* content, uint64_t count);
 
     bool isUndefined() const;
     Expression* getContent() const;
@@ -13,6 +13,7 @@ public:
 
     virtual void dump(int priority) override;
     const std::string& getIdentifier() const;
+    void setIdentifier(std::string identifier);
     bool hasIdentifier() const;
 
 protected:
@@ -21,4 +22,5 @@ protected:
 private:
     Expression* content;
     std::string identifier;
+    uint64_t count;
 };

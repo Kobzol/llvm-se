@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <llvm/IR/Instructions.h>
 
 namespace llvm {
     class Constant;
@@ -8,18 +9,20 @@ namespace llvm {
     class BinaryOperator;
     class CmpInst;
     class ConstantInt;
+    class Value;
 }
 
-#include "expression/Expression.h"
-
-class Path;
+class Expression;
+class ISymbolicState;
 
 class ExprBuilder
 {
 public:
-    ExprBuilder(Path* path);
+    ExprBuilder(ISymbolicState* state);
 
     Expression* build(llvm::Value* value);
+
+    void createVariable(llvm::AllocaInst* alloc);
 
 private:
     Expression* buildConstant(llvm::Constant* constant);
@@ -31,5 +34,5 @@ private:
 
     Expression* add(Expression* expression);
 
-    Path* path;
+    ISymbolicState* state;
 };

@@ -3,15 +3,16 @@
 #include <string>
 
 #include <llvm/IR/Module.h>
+#include <Pass.h>
 
-#include "util/singleton.h"
+#include "util/Singleton.h"
 
 class MemoryCompiler : public Singleton<MemoryCompiler>
 {
     friend class Singleton<MemoryCompiler>;
 
 public:
-    std::unique_ptr<llvm::Module> compile(std::string code);
+    std::unique_ptr<llvm::Module> compile(const std::string& code);
 
 private:
     MemoryCompiler();

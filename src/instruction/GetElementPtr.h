@@ -7,7 +7,7 @@
 class GetElementPtr : public InstructionHandler
 {
 public:
-    virtual void handle(Function* function, llvm::Instruction* instruction) override;
+    virtual void handle(Path* path, llvm::Instruction* instruction) override;
 
 private:
     bool getConstantIndex(llvm::GetElementPtrInst* gep, int64_t* result);

@@ -1,26 +1,27 @@
 #include "ExprBuilder.h"
 
-#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Constants.h>
 
 #include "IntConstant.h"
 #include "UnknownExpression.h"
 #include "AddExpression.h"
-#include "path.h"
+#include "path/Path.h"
 #include "LoadExpression.h"
-#include "util/logger.h"
+#include "util/Logger.h"
+#include "util/DebugUtil.h"
 #include "CmpExpression.h"
+#include "Variable.h"
 
-ExprBuilder::ExprBuilder(Path* path): path(path)
+ExprBuilder::ExprBuilder(ISymbolicState* state) : state(state)
 {
 
 }
 
 Expression* ExprBuilder::build(llvm::Value* value)
 {
-    if (this->path->hasExpr(value))
+    if (this->state->hasExpr(value))
     {
-        return this->path->getExpr(value);
+        return this->state->getExpr(value);
     }
 
     Logger::get().line("Building value %", value);
@@ -38,6 +39,25 @@ Expression* ExprBuilder::build(llvm::Value* value)
     Logger::get().line("Unknown value");
 
     return this->add(new UnknownExpression(value));
+}
+
+void ExprBuilder::createVariable(llvm::AllocaInst* alloc)
+{
+    uint64_t size = 1;
+    if (alloc->isArrayAllocation())
+    {
+        size = alloc->getAllocatedType()->getArrayNumElements();
+    }
+
+    MemoryLocation* var = new Variable(alloc, size);
+    DebugInfo* di = DebugUtil::get().getDebugInfo(var->getValue());
+
+    if (di->hasName())
+    {
+        var->setIdentifier(di->getName());
+    }
+
+    this->state->addMemoryLoc(alloc, var);
 }
 
 Expression* ExprBuilder::buildConstant(llvm::Constant* constant)
@@ -67,9 +87,9 @@ Expression* ExprBuilder::buildInstruction(llvm::Instruction* instruction)
     {
         Logger::get().line("Load");
         llvm::Value* loadExpr = load->getPointerOperand();
-        if (this->path->hasAlloc(loadExpr))
+        if (this->state->hasMemoryLoc(loadExpr))
         {
-            return this->add(new LoadExpression(instruction, this->path->getAlloc(loadExpr)));
+            return this->add(new LoadExpression(instruction, this->state->getMemoryLoc(loadExpr)));
         }
     }
 
@@ -123,9 +143,9 @@ int64_t ExprBuilder::createIntConstant(llvm::ConstantInt* intConstant)
 Expression* ExprBuilder::add(Expression* expression)
 {
     llvm::Value* addr = expression->getValue();
-    if (!this->path->hasExpr(addr))
+    if (!this->state->hasExpr(addr))
     {
-        this->path->addExpr(addr, expression);
+        this->state->addExpr(addr, expression);
     }
 
     return expression;

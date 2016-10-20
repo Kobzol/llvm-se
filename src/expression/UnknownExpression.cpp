@@ -1,7 +1,7 @@
 #include "UnknownExpression.h"
 
-#include "path.h"
-#include "util/logger.h"
+#include "path/Path.h"
+#include "util/Logger.h"
 
 UnknownExpression::UnknownExpression(llvm::Value *value): Expression(value)
 {

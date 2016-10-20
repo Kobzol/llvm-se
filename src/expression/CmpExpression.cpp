@@ -1,7 +1,7 @@
 #include "CmpExpression.h"
 
-#include "path.h"
-#include "util/logger.h"
+#include "path/Path.h"
+#include "util/Logger.h"
 
 CmpExpression::CmpExpression(llvm::Value* value, Expression* lhs, Expression* rhs, llvm::CmpInst::Predicate predicate)
     : BinaryExpression(value, lhs, rhs), predicate(predicate)

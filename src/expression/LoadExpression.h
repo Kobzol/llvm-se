@@ -2,17 +2,19 @@
 
 #include "Expression.h"
 
+class MemoryLocation;
+
 class LoadExpression : public Expression
 {
 public:
-    LoadExpression(llvm::Value* value, Expression* source);
+    LoadExpression(llvm::Value* value, MemoryLocation* source);
 
-    Expression* getSource() const;
+    MemoryLocation* getSource() const;
 
     virtual void dump(int priority) override;
 
     virtual z3::expr createConstraint(Path* path) override;
 
 private:
-    Expression* source;
+    MemoryLocation* source;
 };

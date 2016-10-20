@@ -2,11 +2,11 @@
 
 #include <llvm/IR/Type.h>
 
-#include "path.h"
-#include "util/logger.h"
+#include "path/Path.h"
+#include "util/Logger.h"
 
-MemoryLocation::MemoryLocation(llvm::Value* value, Expression* content, std::string identifier)
-        : Expression(value), content(content), identifier(identifier)
+MemoryLocation::MemoryLocation(llvm::Value* value, Expression* content, uint64_t count)
+        : Expression(value), content(content), identifier(identifier), count(count)
 {
 
 }
@@ -37,6 +37,10 @@ bool MemoryLocation::hasIdentifier() const
 const std::string& MemoryLocation::getIdentifier() const
 {
     return this->identifier;
+}
+void MemoryLocation::setIdentifier(std::string identifier)
+{
+    this->identifier = identifier;
 }
 
 z3::expr MemoryLocation::createConstExpr(Path* path)

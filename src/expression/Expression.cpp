@@ -2,7 +2,7 @@
 
 #include <llvm/IR/Value.h>
 
-#include "util/logger.h"
+#include "util/Logger.h"
 
 Expression::Expression(llvm::Value* value): value(value)
 {
