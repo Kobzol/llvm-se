@@ -12,7 +12,7 @@ public:
     IndexExpression(llvm::Value* value, MemoryLocation* base, std::vector<std::shared_ptr<Expression>> indices);
 
     virtual z3::expr createConstraint(Path* path) override;
-    virtual const std::string& getIdentifier() const override;
+    virtual std::string getIdentifier() const override;
 
     virtual void setContent(Expression* expression) override;
 

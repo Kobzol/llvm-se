@@ -5,6 +5,7 @@
 
 #include <llvm/IR/Module.h>
 
+#include "check/CheckError.h"
 #include "path/SymbolicState.h"
 #include "program/Function.h"
 
@@ -22,9 +23,14 @@ public:
 
     void keepModule(std::unique_ptr<llvm::Module> module);
 
+    const std::vector<CheckError>& getErrors() const;
+    void addError(CheckError error);
+
 private:
     std::vector<std::unique_ptr<Function>> functions;
     llvm::Module* activeModule;
+
+    std::vector<CheckError> errors;
 
     std::vector<std::unique_ptr<llvm::Module>> storedModules;
 };

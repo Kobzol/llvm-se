@@ -2,13 +2,16 @@
 
 #include "catch.hpp"
 
+#include <cassert>
+
 #include "Context.h"
 #include "expression/IntConstant.h"
 #include "path/PathGroup.h"
 #include "util/compile/MemoryCompiler.h"
+#include "util/DebugInfo.h"
 
 extern llvm::LLVMContext* llvmCtx;
-extern PathGroup pathGroup;
+extern std::unique_ptr<PathGroup> pathGroup;
 
 void testInit();
 std::unique_ptr<Context> handleCode(const std::string& code);

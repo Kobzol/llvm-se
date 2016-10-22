@@ -11,7 +11,7 @@ Variable::Variable(llvm::Value* value, uint64_t count, Expression* content)
 
 }
 
-const std::string& Variable::getIdentifier() const
+std::string Variable::getIdentifier() const
 {
     return this->identifier;
 }

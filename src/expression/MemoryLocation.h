@@ -13,11 +13,13 @@ public:
 
     uint64_t getCount() const;
 
+    MemoryLocation* getOrigin();
+
     virtual z3::expr createConstraint(Path* path) override;
     virtual bool isMemoryLocation() const override;
 
     virtual void dump(int priority) override;
-    virtual const std::string& getIdentifier() const = 0;
+    virtual std::string getIdentifier() const = 0;
 
 protected:
     z3::expr createConstExpr(Path* path);

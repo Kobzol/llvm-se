@@ -22,6 +22,7 @@ public:
     bool isFinished() const;
     z3::context& getContext();
     ISymbolicState* getState() const;
+    PathGroup* getGroup() const;
 
     std::unique_ptr<Solver> createSolver();
 

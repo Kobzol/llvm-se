@@ -20,15 +20,14 @@ void Load::handle(Path* path, llvm::Instruction* instruction)
     UndefinedLoadChecker undefChecker;
     undefChecker.check(load, path);
 
-    NullPointerChecker nullChecker;
-    nullChecker.check(load, path);
-
     if (type->isPointerTy())
     {
         state->addMemoryLoc(load, source);
     }
     else
     {
+        NullPointerChecker nullChecker;
+        nullChecker.check(load, path);
         state->addExpr(load, source->getContent());
     }
 

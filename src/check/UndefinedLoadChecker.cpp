@@ -2,12 +2,11 @@
 
 #include <llvm/IR/Instructions.h>
 
-#include "expression/MemoryLocation.h"
-#include "path/ISymbolicState.h"
+#include "Context.h"
 #include "path/Path.h"
+#include "path/PathGroup.h"
 #include "util/DebugInfo.h"
 #include "util/DebugUtil.h"
-#include "util/Logger.h"
 
 void UndefinedLoadChecker::check(llvm::LoadInst* load, Path* path)
 {
@@ -20,7 +19,7 @@ void UndefinedLoadChecker::check(llvm::LoadInst* load, Path* path)
         if (source->isUndefined())
         {
             DebugInfo* di = DebugUtil::get().getDebugInfo(source->getValue());
-            Logger::get().line(Logger::Prio::ERROR, "Undefined read of %", di->getName());
+            path->getGroup()->getContext()->addError(UndefinedLoadError(di));
             break;
         }
 

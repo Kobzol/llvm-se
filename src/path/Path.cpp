@@ -34,6 +34,10 @@ ISymbolicState* Path::getState() const
 {
     return this->state.get();
 }
+PathGroup* Path::getGroup() const
+{
+    return this->pathGroup;
+}
 
 std::unique_ptr<Solver> Path::createSolver()
 {

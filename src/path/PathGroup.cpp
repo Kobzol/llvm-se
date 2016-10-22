@@ -1,5 +1,11 @@
 #include "PathGroup.h"
 
+PathGroup::PathGroup(Context* context) : context(context)
+{
+
+}
+
+
 Path* PathGroup::addPath(std::unique_ptr<Path> path)
 {
     this->paths.push_back(std::move(path));
@@ -18,4 +24,9 @@ void PathGroup::exhaust()
 void PathGroup::clear()
 {
     this->paths.clear();
+}
+
+Context* PathGroup::getContext() const
+{
+    return this->context;
 }

@@ -37,10 +37,10 @@ void Context::handleModule(llvm::Module* module)
 
     if (!main)
     {
-        main = this->functions[0].get();
+        return;
     }
 
-    PathGroup pathGroup;
+    PathGroup pathGroup(this);
     std::unique_ptr<Path> mainPath = std::make_unique<Path>(state.get(), main, &pathGroup);
     pathGroup.addPath(std::move(mainPath));
     pathGroup.exhaust();
@@ -107,4 +107,14 @@ std::string Context::demangle(std::string name) const
 void Context::keepModule(std::unique_ptr<llvm::Module> module)
 {
     this->storedModules.push_back(std::move(module));
+}
+
+const std::vector<CheckError>& Context::getErrors() const
+{
+    return this->errors;
+}
+
+void Context::addError(CheckError error)
+{
+    this->errors.push_back(error);
 }
