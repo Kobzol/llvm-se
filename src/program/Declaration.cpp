@@ -1,6 +1,6 @@
 #include "Declaration.h"
 
-Declaration::Declaration(std::string name, llvm::Type* type): name(std::move(name)), type(type)
+Declaration::Declaration(std::string name, llvm::Type* type): name(name), type(type)
 {
 
 }

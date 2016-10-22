@@ -5,9 +5,10 @@
 class PathGroup
 {
 public:
-    void addPath(std::unique_ptr<Path> path);
+    Path* addPath(std::unique_ptr<Path> path);
 
     void exhaust();
+    void clear();
 
 private:
     std::vector<std::unique_ptr<Path>> paths;

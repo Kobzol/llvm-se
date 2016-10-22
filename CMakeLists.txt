@@ -102,6 +102,7 @@ add_library(src
     src/instruction/Return.cpp
     src/check/NullPointerChecker.cpp
     src/check/UndefinedLoadChecker.cpp
+    src/check/OutOfBoundsChecker.cpp
     src/instruction/Load.cpp
 )
 
@@ -113,8 +114,8 @@ target_link_libraries(llvmSE ${Z3_LIB})
 # Test
 set(TEST_SOURCE_FILES
         test/run_test.cpp
-        test/test_expression.cpp
-        test/util.cpp src/check/NullPointerChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.h)
+        test/test_path.cpp
+        test/util.cpp src/check/NullPointerChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.h src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.h test/test_context.cpp)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)

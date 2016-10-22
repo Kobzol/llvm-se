@@ -24,3 +24,8 @@ void BinaryExpression::dump(int priority)
     Logger::get().log(priority, "RHS: ");
     this->rhs->dump(priority);
 }
+
+bool BinaryExpression::isConstant() const
+{
+    return this->lhs->isConstant() && this->rhs->isConstant();
+}

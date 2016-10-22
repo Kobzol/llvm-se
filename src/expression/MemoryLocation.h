@@ -9,7 +9,7 @@ public:
 
     bool isUndefined() const;
     Expression* getContent() const;
-    void setContent(Expression* content);
+    virtual void setContent(Expression* content);
 
     uint64_t getCount() const;
 

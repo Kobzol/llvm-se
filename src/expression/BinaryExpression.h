@@ -12,6 +12,8 @@ public:
     Expression* getLHS() const;
     Expression* getRHS() const;
 
+    virtual bool isConstant() const override;
+
     virtual void dump(int priority) override;
 
 private:

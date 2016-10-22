@@ -1,11 +1,13 @@
 #include "Context.h"
 
+#include <cxxabi.h>
+
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IntrinsicInst.h>
 #include <llvm/IR/DebugInfoMetadata.h>
-#include <util/Logger.h>
 
 #include "util/DebugUtil.h"
+#include "util/Logger.h"
 #include "expression/ExprBuilder.h"
 #include "path/PathGroup.h"
 
@@ -25,16 +27,18 @@ void Context::handleModule(llvm::Module* module)
         std::vector<Declaration> params;
         for (auto& arg: fn.getArgumentList())
         {
-            params.emplace_back(arg.getName().str(), arg.getType());
+            params.emplace_back(arg.getName(), arg.getType());
         }
         this->functions.push_back(std::make_unique<Function>(&fn));
     }
 
     std::unique_ptr<SymbolicState> state = this->createGlobalState(module);
     Function* main = this->getFunctionByName("main");
-    assert(main);
 
-    main->getHandle()->dump();
+    if (!main)
+    {
+        main = this->functions[0].get();
+    }
 
     PathGroup pathGroup;
     std::unique_ptr<Path> mainPath = std::make_unique<Path>(state.get(), main, &pathGroup);
@@ -66,4 +70,41 @@ std::unique_ptr<SymbolicState> Context::createGlobalState(llvm::Module* module)
     }
 
     return state;
+}
+
+Function* Context::getFunctionByDemangledName(std::string name) const
+{
+    for (auto& fn : this->functions)
+    {
+        std::string demangled = this->demangle(fn->getName());
+
+        if (demangled == "") continue;
+
+        demangled = demangled.substr(0, demangled.find("("));
+
+        if (demangled == name)
+        {
+            return fn.get();
+        }
+    }
+
+    return nullptr;
+}
+
+std::string Context::demangle(std::string name) const
+{
+    std::unique_ptr<char, void(*)(void*)> demangled = std::unique_ptr<char, void(*)(void*)>(
+            abi::__cxa_demangle(name.c_str(), NULL, NULL, NULL),
+            std::free
+    );
+
+    if (!demangled.get()) return "";
+
+    size_t count = std::strlen(demangled.get());
+    return std::string(demangled.get(), count);
+}
+
+void Context::keepModule(std::unique_ptr<llvm::Module> module)
+{
+    this->storedModules.push_back(std::move(module));
 }

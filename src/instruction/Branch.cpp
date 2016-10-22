@@ -16,7 +16,11 @@ void Branch::handle(Path* path, llvm::Instruction* instruction)
         Expression* condition = builder.build(branch->getCondition());
         std::unique_ptr<Solver> solver = path->createSolver();
         solver->addConstraint(condition->createConstraint(path));
-        std::cerr << solver->isSatisfiable() << std::endl;
+
+        if (solver->isSatisfiable())
+        {
+
+        }
     }
     else
     {

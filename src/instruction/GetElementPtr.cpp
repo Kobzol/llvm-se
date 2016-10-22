@@ -2,6 +2,7 @@
 
 #include <llvm/IR/Module.h>
 
+#include "check/OutOfBoundsChecker.h"
 #include "expression/ExprBuilder.h"
 #include "expression/IndexExpression.h"
 #include "program/Function.h"
@@ -11,26 +12,27 @@ void GetElementPtr::handle(Path* path, llvm::Instruction* instruction)
 {
     llvm::GetElementPtrInst* gep = static_cast<llvm::GetElementPtrInst*>(instruction);
 
-    ExprBuilder builder(path->getState());
-
-    std::shared_ptr<IndexExpression> index;
+    ISymbolicState* state = path->getState();
     int64_t constantIndex = 0;
 
     if (this->getConstantIndex(gep, &constantIndex))
     {
-        index = std::make_shared<IndexExpression>(gep, gep->getPointerOperand(), constantIndex);
+        llvm::Value* baseAddr = gep->getPointerOperand();
+        MemoryLocation* base = state->getMemoryLoc(baseAddr);
+        IndexExpression* index = new IndexExpression(gep, base, constantIndex);
+
+        OutOfBoundsChecker oobChecker;
+        oobChecker.check(gep, base, constantIndex, path);
+
+        state->store(gep, index);
+        state->addMemoryLoc(gep, index);
     }
     else
     {
-        /*std::vector<std::shared_ptr<Expression>> indices;
-        for (unsigned int i = 1; i < gep->getNumOperands(); i++)
-        {
-            llvm::Value* operand = gep->getOperand(i);
-            indices.push_back(builder.build(operand));
-        }
-
-        index = std::make_shared<IndexExpression>(gep, gep->getPointerOperand(), indices);*/
+        assert(0);
     }
+
+    path->moveToNextInstruction();
 }
 
 bool GetElementPtr::getConstantIndex(llvm::GetElementPtrInst* gep, int64_t* result)

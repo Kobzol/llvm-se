@@ -1,8 +1,9 @@
 #include "PathGroup.h"
 
-void PathGroup::addPath(std::unique_ptr<Path> path)
+Path* PathGroup::addPath(std::unique_ptr<Path> path)
 {
     this->paths.push_back(std::move(path));
+    return this->paths.at(this->paths.size() - 1).get();
 }
 
 void PathGroup::exhaust()
@@ -12,4 +13,9 @@ void PathGroup::exhaust()
     {
         path->executeInstruction();
     }
+}
+
+void PathGroup::clear()
+{
+    this->paths.clear();
 }
