@@ -6,14 +6,14 @@
 #include "util/Logger.h"
 
 MemoryLocation::MemoryLocation(llvm::Value* value, Expression* content, uint64_t count)
-        : Expression(value), content(content), identifier(identifier), count(count)
+        : Expression(value), content(content), count(count)
 {
 
 }
 
 void MemoryLocation::dump(int priority)
 {
-    Logger::get().line(priority, this->getIdentifier());
+    Logger::get().line(priority, "% (%)", this->getIdentifier(), this->getValue());
 }
 
 Expression* MemoryLocation::getContent() const
@@ -25,22 +25,14 @@ void MemoryLocation::setContent(Expression* content)
     this->content = content;
 }
 
+uint64_t MemoryLocation::getCount() const
+{
+    return this->count;
+}
+
 bool MemoryLocation::isUndefined() const
 {
     return this->content == nullptr;
-}
-
-bool MemoryLocation::hasIdentifier() const
-{
-    return this->getIdentifier() != "";
-}
-const std::string& MemoryLocation::getIdentifier() const
-{
-    return this->identifier;
-}
-void MemoryLocation::setIdentifier(std::string identifier)
-{
-    this->identifier = identifier;
 }
 
 z3::expr MemoryLocation::createConstExpr(Path* path)
@@ -55,4 +47,20 @@ z3::expr MemoryLocation::createConstExpr(Path* path)
     }
 
     return ctx.int_const(name.c_str());
+}
+
+z3::expr MemoryLocation::createConstraint(Path* path)
+{
+    if (this->isUndefined())
+    {
+        this->dump(1);
+        throw "1";
+    }
+
+    return this->getContent()->createConstraint(path);
+}
+
+bool MemoryLocation::isMemoryLocation() const
+{
+    return true;
 }

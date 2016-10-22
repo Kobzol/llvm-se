@@ -19,10 +19,9 @@ ExprBuilder::ExprBuilder(ISymbolicState* state) : state(state)
 
 Expression* ExprBuilder::build(llvm::Value* value)
 {
-    if (this->state->hasExpr(value))
-    {
-        return this->state->getExpr(value);
-    }
+    if (value == nullptr) return nullptr;
+    if (this->state->hasExpr(value)) return this->state->getExpr(value);
+    if (this->state->hasMemoryLoc(value)) return this->state->getMemoryLoc(value);
 
     Logger::get().line("Building value %", value);
 
@@ -49,7 +48,7 @@ void ExprBuilder::createVariable(llvm::AllocaInst* alloc)
         size = alloc->getAllocatedType()->getArrayNumElements();
     }
 
-    MemoryLocation* var = new Variable(alloc, size);
+    Variable* var = new Variable(alloc, size);
     DebugInfo* di = DebugUtil::get().getDebugInfo(var->getValue());
 
     if (di->hasName())
@@ -57,14 +56,27 @@ void ExprBuilder::createVariable(llvm::AllocaInst* alloc)
         var->setIdentifier(di->getName());
     }
 
+    this->state->store(alloc, var);
     this->state->addMemoryLoc(alloc, var);
 }
 
 Expression* ExprBuilder::buildConstant(llvm::Constant* constant)
 {
+    constant = constant->stripPointerCasts();
+
+    while (auto* constantPtr = llvm::dyn_cast<llvm::ConstantExpr>(constant))
+    {
+        assert(constantPtr->getNumOperands() == 1);
+        constant = constantPtr->getOperand(0);
+    }
+
     if (auto* intConstant = llvm::dyn_cast<llvm::ConstantInt>(constant))
     {
         return this->add(new IntConstant(constant, this->createIntConstant(intConstant)));
+    }
+    else if (llvm::isa<llvm::ConstantPointerNull>(constant))
+    {
+        return this->add(new IntConstant(constant, 0));
     }
 
     Logger::get().line("Unknown constant");
@@ -85,6 +97,7 @@ Expression* ExprBuilder::buildInstruction(llvm::Instruction* instruction)
     }
     else if (auto* load = llvm::dyn_cast<llvm::LoadInst>(instruction))
     {
+        assert(0);
         Logger::get().line("Load");
         llvm::Value* loadExpr = load->getPointerOperand();
         if (this->state->hasMemoryLoc(loadExpr))

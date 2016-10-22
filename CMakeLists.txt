@@ -99,6 +99,10 @@ add_library(src
     src/path/PathGroup.cpp
     src/instruction/InstructionDispatcher.cpp
     src/expression/Variable.cpp
+    src/instruction/Return.cpp
+    src/check/NullPointerChecker.cpp
+    src/check/UndefinedLoadChecker.cpp
+    src/instruction/Load.cpp
 )
 
 # LLVM pass
@@ -110,7 +114,7 @@ target_link_libraries(llvmSE ${Z3_LIB})
 set(TEST_SOURCE_FILES
         test/run_test.cpp
         test/test_expression.cpp
-        test/util.cpp)
+        test/util.cpp src/check/NullPointerChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.h)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)

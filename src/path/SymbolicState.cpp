@@ -1,5 +1,6 @@
 #include "SymbolicState.h"
 
+#include "solver/Solver.h"
 #include "util/Logger.h"
 
 bool SymbolicState::hasMemoryLoc(llvm::Value* address) const
@@ -13,7 +14,6 @@ MemoryLocation* SymbolicState::getMemoryLoc(llvm::Value* address) const
 }
 void SymbolicState::addMemoryLoc(llvm::Value* address, MemoryLocation* memoryLocation)
 {
-    this->memory[address] = std::unique_ptr<Expression>(static_cast<Expression*>(memoryLocation));
     this->memoryLocations[address] = memoryLocation;
 }
 
@@ -28,11 +28,39 @@ Expression* SymbolicState::getExpr(llvm::Value* address) const
 }
 void SymbolicState::addExpr(llvm::Value* address, Expression* expression)
 {
-    this->memory[address] = std::unique_ptr<Expression>(expression);
     this->expressions[address] = expression;
 }
 
 void SymbolicState::dump(int priority)
 {
-    Logger::get().line(priority, "Symbolic state");
+    for (auto& kv : this->memoryLocations)
+    {
+        kv.second->dump(priority);
+        Logger::get().log(priority, " = ");
+        if (kv.second->getContent() != nullptr)
+        {
+            kv.second->getContent()->dump(priority);
+        }
+        else Logger::get().line(priority, "null");
+    }
+    for (auto& kv : this->expressions)
+    {
+        kv.second->dump(priority);
+    }
+}
+
+void SymbolicState::setConstraints(Path* path, Solver& solver) const
+{
+    for (auto& kv : this->memoryLocations)
+    {
+        z3::expr var = kv.second->createConstraint(path);
+        z3::expr value = kv.second->getContent()->createConstraint(path);
+        solver.addConstraint(var == value);
+    }
+}
+
+void SymbolicState::store(llvm::Value* address, Expression* expression)
+{
+    assert(this->memory.count(address) == 0);
+    this->memory[address] = std::unique_ptr<Expression>(expression);
 }

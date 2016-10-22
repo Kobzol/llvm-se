@@ -1,8 +1,11 @@
 #include <instruction/InstructionDispatcher.h>
-#include "Path.h"
+
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Instruction.h>
 
 #include "SymbolicState.h"
 #include "WrapperState.h"
+#include "Path.h"
 
 z3::context Path::CTX;
 
@@ -34,19 +37,7 @@ ISymbolicState* Path::getState() const
 
 std::unique_ptr<Solver> Path::createSolver()
 {
-    std::unique_ptr<Solver> solver = std::make_unique<Solver>(&this->getContext());
-
-    /*for (auto& var : this->variables) TODO
-    {
-        if (!var.second->isUndefined() && var.second->hasIdentifier())
-        {
-            z3::expr varName = var.second->createConstraint(this);
-            z3::expr varValue = var.second->getContent()->createConstraint(this);
-            solver->addConstraint(varName == varValue);
-        }
-    }*/
-
-    return solver;
+    return std::make_unique<Solver>(&this->getContext(), this);
 }
 
 void Path::dump(int priority)
@@ -54,8 +45,29 @@ void Path::dump(int priority)
     this->state->dump(priority);
 }
 
-llvm::Instruction* Path::advance()
+void Path::moveToNextInstruction()
 {
-    InstructionDispatcher::get();
-    return nullptr;
+    this->instruction = this->instruction->getNextNode();
+}
+void Path::jumpTo(llvm::Instruction* instruction)
+{
+    this->instruction = instruction;
+}
+void Path::executeInstruction()
+{
+    InstructionDispatcher::get().dispatch(this, this->instruction);
+}
+const llvm::Instruction* Path::getInstruction() const
+{
+    return this->instruction;
+}
+
+void Path::setFinished(Expression* value)
+{
+    this->finished = true;
+    this->returnValue = value;
+}
+Expression* Path::getReturnValue() const
+{
+    return this->returnValue;
 }

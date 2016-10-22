@@ -3,6 +3,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IntrinsicInst.h>
 #include <llvm/IR/DebugInfoMetadata.h>
+#include <util/Logger.h>
 
 #include "util/DebugUtil.h"
 #include "expression/ExprBuilder.h"
@@ -17,6 +18,8 @@ void Context::handleModule(llvm::Module* module)
 {
     this->activeModule = module;
 
+    Logger::get().setPriority(Logger::Prio::INFO);
+
     for (auto& fn : module->getFunctionList())
     {
         std::vector<Declaration> params;
@@ -30,6 +33,8 @@ void Context::handleModule(llvm::Module* module)
     std::unique_ptr<SymbolicState> state = this->createGlobalState(module);
     Function* main = this->getFunctionByName("main");
     assert(main);
+
+    main->getHandle()->dump();
 
     PathGroup pathGroup;
     std::unique_ptr<Path> mainPath = std::make_unique<Path>(state.get(), main, &pathGroup);

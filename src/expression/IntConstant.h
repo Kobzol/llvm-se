@@ -11,7 +11,10 @@ public:
 
     virtual void dump(int priotity) override;
 
+    int64_t getConstant() const;
+
     virtual z3::expr createConstraint(Path* path) override;
+    virtual bool isConstant() const override;
 
 private:
     int64_t constant;

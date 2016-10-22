@@ -11,12 +11,11 @@ Variable::Variable(llvm::Value* value, uint64_t count, Expression* content)
 
 }
 
-z3::expr Variable::createConstraint(Path* path)
+const std::string& Variable::getIdentifier() const
 {
-    if (this->isUndefined())
-    {
-        throw "1";
-    }
-
-    return this->getContent()->createConstraint(path);
+    return this->identifier;
+}
+void Variable::setIdentifier(std::string identifier)
+{
+    this->identifier = identifier;
 }

@@ -45,7 +45,17 @@ void WrapperState::addExpr(llvm::Value* address, Expression* expression)
 
 void WrapperState::dump(int priority)
 {
-    Logger::get().line(priority, "Wrapper state");
     this->primary->dump(priority);
     this->secondary->dump(priority);
+}
+
+void WrapperState::setConstraints(Path* path, Solver& solver) const
+{
+    this->primary->setConstraints(path, solver);
+    this->secondary->setConstraints(path, solver);
+}
+
+void WrapperState::store(llvm::Value* address, Expression* expression)
+{
+    this->primary->store(address, expression);
 }

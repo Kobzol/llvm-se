@@ -10,6 +10,6 @@ void PathGroup::exhaust()
     Path* path = this->paths[0].get();
     while (!path->isFinished())
     {
-        llvm::Instruction* next = path->advance();
+        path->executeInstruction();
     }
 }

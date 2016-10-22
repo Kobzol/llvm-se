@@ -31,7 +31,7 @@ public:
     template <typename... Targs>
     bool line(std::string format, Targs... args)
     {
-        return this->line(0, format, args...);
+        return this->line(Logger::Prio::DEBUG, format, args...);
     }
 
     template <typename... Targs>
@@ -48,7 +48,7 @@ public:
     template <typename... Targs>
     bool log(std::string format, Targs... args)
     {
-        return this->log(0, format, args...);
+        return this->log(Logger::Prio::DEBUG, format, args...);
     }
 
     void setPriority(int priority);

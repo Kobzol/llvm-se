@@ -11,16 +11,18 @@ public:
     Expression* getContent() const;
     void setContent(Expression* content);
 
+    uint64_t getCount() const;
+
+    virtual z3::expr createConstraint(Path* path) override;
+    virtual bool isMemoryLocation() const override;
+
     virtual void dump(int priority) override;
-    const std::string& getIdentifier() const;
-    void setIdentifier(std::string identifier);
-    bool hasIdentifier() const;
+    virtual const std::string& getIdentifier() const = 0;
 
 protected:
     z3::expr createConstExpr(Path* path);
 
 private:
     Expression* content;
-    std::string identifier;
     uint64_t count;
 };

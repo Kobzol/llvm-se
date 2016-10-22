@@ -25,7 +25,13 @@ public:
 
     std::unique_ptr<Solver> createSolver();
 
-    llvm::Instruction* advance();
+    void setFinished(Expression* value);
+    Expression* getReturnValue() const;
+
+    void moveToNextInstruction();
+    void jumpTo(llvm::Instruction* instruction);
+    void executeInstruction();
+    const llvm::Instruction* getInstruction() const;
 
     void dump(int priority);
 
@@ -36,6 +42,7 @@ private:
     Function* function;
     llvm::Instruction* instruction;
     PathGroup* pathGroup;
+    Expression* returnValue;
 
     std::unique_ptr<ISymbolicState> state;
     std::unique_ptr<ISymbolicState> localState;

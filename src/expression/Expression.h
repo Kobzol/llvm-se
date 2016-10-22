@@ -20,6 +20,9 @@ public:
 
     virtual z3::expr createConstraint(Path* path) = 0;
 
+    virtual bool isConstant() const;
+    virtual bool isMemoryLocation() const;
+
     virtual void dump(int priority = 0);
 
 private:

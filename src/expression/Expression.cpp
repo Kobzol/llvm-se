@@ -25,3 +25,12 @@ void Expression::dump(int priority)
         this->value->dump();
     }
 }
+
+bool Expression::isConstant() const
+{
+    return false;
+}
+bool Expression::isMemoryLocation() const
+{
+    return false;
+}
