@@ -26,10 +26,11 @@ std::string transitiveUL = R"(
     {
         int a;
         int* p = &a;
-        int c = *p;
+        int** pp = &p;
+        int c = *(*pp);
     }
 )";
-TEST_CASE("Check recognizes transitive undefined loads") {
+TEST_CASE("Check detects transitive undefined loads") {
     std::unique_ptr<Context> ctx = handleCode(transitiveUL);
     Function* fn = ctx->getFunctionByDemangledName("transitiveUL");
     Path* path = createPath(ctx.get(), fn);
@@ -38,7 +39,7 @@ TEST_CASE("Check recognizes transitive undefined loads") {
     const std::vector<CheckError>& errors = ctx->getErrors();
     REQUIRE(errors.size() == 1);
     REQUIRE(errors.at(0).getType() == CheckErrorType::UndefinedLoad);
-    REQUIRE(errors.at(0).getLocation() == loc(5));
+    REQUIRE(errors.at(0).getLocation() == loc(6));
 }
 
 std::string simpleNull = R"(
@@ -60,6 +61,26 @@ TEST_CASE("Check detects simple null pointer dereferences") {
     const CheckError& error = errors.at(0);
     REQUIRE(error.getType() == CheckErrorType::NullPointerDereference);
     REQUIRE(error.getLocation() == loc(4));
+}
+
+std::string transitiveNull = R"(
+    void transitiveNull()
+    {
+        int* p = nullptr;
+        int** pp = &p;
+        int b = *(*pp);
+    }
+)";
+TEST_CASE("Check detects transitive null pointer dereferences") {
+    std::unique_ptr<Context> ctx = handleCode(transitiveNull);
+    Function* fn = ctx->getFunctionByDemangledName("transitiveNull");
+    Path* path = createPath(ctx.get(), fn);
+    pathGroup->exhaust();
+
+    const std::vector<CheckError>& errors = ctx->getErrors();
+    REQUIRE(errors.size() == 1);
+    REQUIRE(errors.at(0).getType() == CheckErrorType::NullPointerDereference);
+    REQUIRE(errors.at(0).getLocation() == loc(5));
 }
 
 std::string intZero = R"(

@@ -21,7 +21,6 @@ Expression* ExprBuilder::build(llvm::Value* value)
 {
     if (value == nullptr) return nullptr;
     if (this->state->hasExpr(value)) return this->state->getExpr(value);
-    if (this->state->hasExpr(value)) return this->state->getExpr(value);
 
     Logger::get().line("Building value %", value);
 

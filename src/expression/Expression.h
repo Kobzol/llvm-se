@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <z3++.h>
 
 namespace llvm {
@@ -22,6 +21,7 @@ public:
 
     virtual bool isConstant() const;
     virtual bool isMemoryLocation() const;
+    virtual bool isLoad() const;
 
     virtual void dump(int priority = 0);
 

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <llvm/IR/Instructions.h>
+#include <expression/LoadExpression.h>
 
 #include "Context.h"
 #include "path/Path.h"
@@ -17,12 +18,17 @@ void NullPointerChecker::check(llvm::LoadInst* load, Path* path)
 
     Expression* source = state->getExpr(sourceAddr);
 
-    if (!source->isMemoryLocation() && source->isConstant())
+    if (source->isLoad())
     {
-        IntConstant* constant = static_cast<IntConstant*>(source);
-        if (constant->getConstant() == 0)
+        LoadExpression* loadExpr = static_cast<LoadExpression*>(source);
+        MemoryLocation* pointer = loadExpr->getSource();
+        if (!pointer->isUndefined() && pointer->getContent()->isConstant())
         {
-            path->getGroup()->getContext()->addError(NullDereferenceError(DebugUtil::get().getInstructionLocation(load)));
+            IntConstant* constant = static_cast<IntConstant*>(pointer->getContent());
+            if (constant->getConstant() == 0)
+            {
+                path->getGroup()->getContext()->addError(NullDereferenceError(DebugUtil::get().getInstructionLocation(load)));
+            }
         }
     }
 }

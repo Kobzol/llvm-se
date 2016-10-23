@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "MemoryLocation.h"
 
 class Variable : public MemoryLocation

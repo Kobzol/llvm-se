@@ -115,10 +115,22 @@ target_link_libraries(llvmSE ${Z3_LIB})
 # Test
 set(TEST_SOURCE_FILES
         test/run_test.cpp
+        test/util.cpp
         test/test_path.cpp
-        test/util.cpp src/check/NullPointerChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.h src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.h test/test_context.cpp src/check/CheckError.cpp src/check/CheckError.h test/test_check.cpp)
+        test/test_context.cpp
+        test/test_check.cpp
+)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)
 target_link_libraries(unittest ${CLANG_LIB})
 target_link_libraries(unittest ${Z3_LIB})
+
+# Direct run
+set (RUN_SOURCE_FILES
+        DirectRun.cpp
+)
+add_executable(direct ${RUN_SOURCE_FILES})
+target_link_libraries(direct src)
+target_link_libraries(direct ${CLANG_LIB})
+target_link_libraries(direct ${Z3_LIB})

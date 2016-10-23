@@ -34,3 +34,7 @@ bool Expression::isMemoryLocation() const
 {
     return false;
 }
+bool Expression::isLoad() const
+{
+    return false;
+}

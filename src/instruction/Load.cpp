@@ -4,7 +4,7 @@
 
 #include "check/NullPointerChecker.h"
 #include "check/UndefinedLoadChecker.h"
-#include "expression/MemoryLocation.h"
+#include "expression/LoadExpression.h"
 #include "path/Path.h"
 
 void Load::handle(Path* path, llvm::Instruction* instruction)
@@ -21,7 +21,13 @@ void Load::handle(Path* path, llvm::Instruction* instruction)
     NullPointerChecker nullChecker;
     nullChecker.check(load, path);
 
-    state->addExpr(load, source->getContent());
+    if (!source->isUndefined() && source->isLoad())
+    {
+        source = static_cast<MemoryLocation*>(static_cast<LoadExpression*>(source)->getSource()->getContent());
+        //assert(source->isMemoryLocation());
+    }
+
+    state->addExpr(load, new LoadExpression(load, source));
 
     path->moveToNextInstruction();
 }

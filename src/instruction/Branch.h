@@ -7,6 +7,9 @@ namespace llvm {
     class Instruction;
 }
 
+class Expression;
+class Path;
+
 class Branch : public InstructionHandler
 {
 public:
@@ -14,4 +17,5 @@ public:
 
 private:
     llvm::Instruction* getFirstInstruction(llvm::BasicBlock* block);
+    bool checkSatisfiability(Path* path, Expression* expr);
 };
