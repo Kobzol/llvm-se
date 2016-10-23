@@ -12,12 +12,15 @@ void Store::handle(Path* path, llvm::Instruction* instruction)
 {
     llvm::StoreInst* st = static_cast<llvm::StoreInst*>(instruction);
 
-    llvm::Value* target = st->getPointerOperand();
+    llvm::Value* targetAddr = st->getPointerOperand();
     llvm::Value* source = st->getValueOperand();
 
     ExprBuilder builder(path->getState());
     Expression* assignment = builder.build(source);
-    path->getState()->getMemoryLoc(target)->setContent(assignment);
+    Expression* target = path->getState()->getExpr(targetAddr);
+    assert(target->isMemoryLocation());
+
+    static_cast<MemoryLocation*>(target)->setContent(assignment);
 
     path->moveToNextInstruction();
 }

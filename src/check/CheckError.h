@@ -1,42 +1,54 @@
 #pragma once
 
+#include <string>
+
 struct DebugInfo;
 
 enum class CheckErrorType
 {
     NullPointerDereference = 0,
     OutOfBoundsAccess = 1,
-    UndefinedLoadChecker = 2
+    UndefinedLoad = 2
 };
 
 class CheckError
 {
 public:
-    CheckError(CheckErrorType type);
-    CheckError(CheckErrorType type, const DebugInfo* info);
+    CheckError(CheckErrorType type, std::string location);
+
+    std::string getLocation() const;
 
     CheckErrorType getType() const;
-    const DebugInfo* getDebugInfo() const;
+    virtual void dump(int priority) const;
 
 private:
     CheckErrorType type;
-    const DebugInfo* debugInfo = nullptr;
+    std::string location;
 };
 
 class NullDereferenceError : public CheckError
 {
 public:
-    NullDereferenceError(const DebugInfo* info);
+    NullDereferenceError(std::string location);
+
+    virtual void dump(int priority) const override;
+
+private:
+    std::string location;
 };
 
 class OutOfBoundsError : public CheckError
 {
 public:
-    OutOfBoundsError(const DebugInfo* info);
+    OutOfBoundsError(std::string location);
+
+    virtual void dump(int priority) const override;
 };
 
 class UndefinedLoadError : public CheckError
 {
 public:
-    UndefinedLoadError(const DebugInfo* info);
+    UndefinedLoadError(std::string location);
+
+    virtual void dump(int priority) const override;
 };

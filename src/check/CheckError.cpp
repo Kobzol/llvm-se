@@ -1,11 +1,8 @@
 #include "CheckError.h"
 
-CheckError::CheckError(CheckErrorType type) : type(type)
-{
+#include "util/Logger.h"
 
-}
-
-CheckError::CheckError(CheckErrorType type, const DebugInfo* info) : type(type), debugInfo(info)
+CheckError::CheckError(CheckErrorType type, std::string location) : type(type), location(location)
 {
 
 }
@@ -14,23 +11,45 @@ CheckErrorType CheckError::getType() const
 {
     return this->type;
 }
-
-const DebugInfo* CheckError::getDebugInfo() const
+std::string CheckError::getLocation() const
 {
-    return this->debugInfo;
+    return this->location;
 }
 
-NullDereferenceError::NullDereferenceError(const DebugInfo* info) : CheckError(CheckErrorType::NullPointerDereference, info)
+void CheckError::dump(int priority) const
+{
+    Logger::get().line(priority, "CheckError (type %) at %", static_cast<int>(this->getType()), this->getLocation());
+}
+
+NullDereferenceError::NullDereferenceError(std::string location)
+        : CheckError(CheckErrorType::NullPointerDereference, location)
 {
 
 }
 
-OutOfBoundsError::OutOfBoundsError(const DebugInfo* info) : CheckError(CheckErrorType::OutOfBoundsAccess, info)
+void NullDereferenceError::dump(int priority) const
+{
+    Logger::get().line(priority, "Null dereference at %", this->getLocation());
+}
+
+OutOfBoundsError::OutOfBoundsError(std::string location)
+        : CheckError(CheckErrorType::OutOfBoundsAccess, location)
 {
 
 }
 
-UndefinedLoadError::UndefinedLoadError(const DebugInfo* info) : CheckError(CheckErrorType::UndefinedLoadChecker, info)
+void OutOfBoundsError::dump(int priority) const
+{
+    Logger::get().line(priority, "OOB access at %", this->getLocation());
+}
+
+UndefinedLoadError::UndefinedLoadError(std::string location)
+        : CheckError(CheckErrorType::UndefinedLoad, location)
 {
 
+}
+
+void UndefinedLoadError::dump(int priority) const
+{
+    Logger::get().line(priority, "Undefined load at %", this->getLocation());
 }

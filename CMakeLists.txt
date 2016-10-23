@@ -104,6 +104,7 @@ add_library(src
     src/check/UndefinedLoadChecker.cpp
     src/check/OutOfBoundsChecker.cpp
     src/instruction/Load.cpp
+    src/check/CheckError.cpp
 )
 
 # LLVM pass
@@ -115,7 +116,7 @@ target_link_libraries(llvmSE ${Z3_LIB})
 set(TEST_SOURCE_FILES
         test/run_test.cpp
         test/test_path.cpp
-        test/util.cpp src/check/NullPointerChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.h src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.h test/test_context.cpp src/check/CheckError.cpp src/check/CheckError.h)
+        test/util.cpp src/check/NullPointerChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.cpp src/check/UndefinedLoadChecker.h src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.cpp src/check/OutOfBoundsChecker.h test/test_context.cpp src/check/CheckError.cpp src/check/CheckError.h test/test_check.cpp)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)

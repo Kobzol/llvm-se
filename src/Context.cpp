@@ -44,6 +44,11 @@ void Context::handleModule(llvm::Module* module)
     std::unique_ptr<Path> mainPath = std::make_unique<Path>(state.get(), main, &pathGroup);
     pathGroup.addPath(std::move(mainPath));
     pathGroup.exhaust();
+
+    for (auto& error : this->errors)
+    {
+        error.dump(Logger::Prio::ERROR);
+    }
 }
 
 Function* Context::getFunctionByName(std::string name) const
@@ -66,7 +71,7 @@ std::unique_ptr<SymbolicState> Context::createGlobalState(llvm::Module* module)
 
     for (llvm::GlobalVariable& global : module->getGlobalList())
     {
-        state->addMemoryLoc(&global, static_cast<MemoryLocation*>(builder.build(&global)));
+        state->addExpr(&global, static_cast<MemoryLocation*>(builder.build(&global)));
     }
 
     return state;

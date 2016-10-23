@@ -21,6 +21,7 @@ class DebugUtil : public Singleton<DebugUtil>
 
 public:
     DebugInfo* getDebugInfo(llvm::Value* inst);
+    std::string getInstructionLocation(llvm::Instruction* inst);
 
 private:
     DebugUtil();

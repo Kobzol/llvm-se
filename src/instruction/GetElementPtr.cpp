@@ -18,14 +18,14 @@ void GetElementPtr::handle(Path* path, llvm::Instruction* instruction)
     if (this->getConstantIndex(gep, &constantIndex))
     {
         llvm::Value* baseAddr = gep->getPointerOperand();
-        MemoryLocation* base = state->getMemoryLoc(baseAddr);
+        MemoryLocation* base = static_cast<MemoryLocation*>(state->getExpr(baseAddr));
+        assert(base->isMemoryLocation());
         IndexExpression* index = new IndexExpression(gep, base, constantIndex);
 
         OutOfBoundsChecker oobChecker;
         oobChecker.check(gep, base, constantIndex, path);
 
-        state->store(gep, index);
-        state->addMemoryLoc(gep, index);
+        state->addExpr(gep, index);
     }
     else
     {

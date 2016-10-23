@@ -3,6 +3,7 @@
 llvm::LLVMContext* llvmCtx = nullptr;
 std::unique_ptr<PathGroup> pathGroup;
 static std::unique_ptr<ISymbolicState> globalStateHolder;
+static std::string FILENAME = "input.cc";
 
 void testInit()
 {
@@ -40,4 +41,9 @@ Path* createPath(Context* context, Function* function)
     pathGroup.reset();
     pathGroup = std::make_unique<PathGroup>(context);
     return pathGroup->addPath(std::make_unique<Path>(globalStateHolder.get(), function, pathGroup.get()));
+}
+
+std::string loc(int line)
+{
+    return FILENAME + ":" + std::to_string(line);
 }

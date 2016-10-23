@@ -13,20 +13,13 @@ void UndefinedLoadChecker::check(llvm::LoadInst* load, Path* path)
     llvm::Value* sourceAddr = load->getPointerOperand();
     ISymbolicState* state = path->getState();
 
-    while (state->hasMemoryLoc(sourceAddr))
+    if (state->hasExpr(sourceAddr))
     {
-        MemoryLocation* source = state->getMemoryLoc(sourceAddr);
-        if (source->isUndefined())
+        MemoryLocation* source = static_cast<MemoryLocation*>(state->getExpr(sourceAddr));
+        if (source->isMemoryLocation() && source->isUndefined())
         {
-            DebugInfo* di = DebugUtil::get().getDebugInfo(source->getValue());
-            path->getGroup()->getContext()->addError(UndefinedLoadError(di));
-            break;
+            path->getGroup()->getContext()->addError(UndefinedLoadError(DebugUtil::get().getInstructionLocation(load)));
         }
-
-        if (source->getContent()->isMemoryLocation())
-        {
-            sourceAddr = source->getContent()->getValue();
-        }
-        else break;
     }
+    else assert(0);
 }

@@ -15,15 +15,14 @@ void NullPointerChecker::check(llvm::LoadInst* load, Path* path)
     ISymbolicState* state = path->getState();
     llvm::Value* sourceAddr = load->getPointerOperand();
 
-    MemoryLocation* source = state->getMemoryLoc(sourceAddr);
-    if (!source->isUndefined() && source->getContent()->isConstant())
+    Expression* source = state->getExpr(sourceAddr);
+
+    if (!source->isMemoryLocation() && source->isConstant())
     {
-        IntConstant* constant = static_cast<IntConstant*>(source->getContent());
+        IntConstant* constant = static_cast<IntConstant*>(source);
         if (constant->getConstant() == 0)
         {
-            MemoryLocation* origin = source->getOrigin();
-            DebugInfo* di = DebugUtil::get().getDebugInfo(origin->getValue());
-            path->getGroup()->getContext()->addError(NullDereferenceError(di));
+            path->getGroup()->getContext()->addError(NullDereferenceError(DebugUtil::get().getInstructionLocation(load)));
         }
     }
 }

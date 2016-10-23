@@ -21,7 +21,7 @@ Expression* ExprBuilder::build(llvm::Value* value)
 {
     if (value == nullptr) return nullptr;
     if (this->state->hasExpr(value)) return this->state->getExpr(value);
-    if (this->state->hasMemoryLoc(value)) return this->state->getMemoryLoc(value);
+    if (this->state->hasExpr(value)) return this->state->getExpr(value);
 
     Logger::get().line("Building value %", value);
 
@@ -56,8 +56,7 @@ void ExprBuilder::createVariable(llvm::AllocaInst* alloc)
         var->setIdentifier(di->getName());
     }
 
-    this->state->store(alloc, var);
-    this->state->addMemoryLoc(alloc, var);
+    this->state->addExpr(alloc, var);
 }
 
 Expression* ExprBuilder::buildConstant(llvm::Constant* constant)
@@ -98,12 +97,12 @@ Expression* ExprBuilder::buildInstruction(llvm::Instruction* instruction)
     else if (auto* load = llvm::dyn_cast<llvm::LoadInst>(instruction))
     {
         assert(0);
-        Logger::get().line("Load");
+        /*Logger::get().line("Load");
         llvm::Value* loadExpr = load->getPointerOperand();
-        if (this->state->hasMemoryLoc(loadExpr))
+        if (this->state->hasExpr(loadExpr))
         {
-            return this->add(new LoadExpression(instruction, this->state->getMemoryLoc(loadExpr)));
-        }
+            return this->add(new LoadExpression(instruction, this->state->getExpr(loadExpr)));
+        }*/
     }
 
     Logger::get().line(Logger::Prio::WARNING, "Unknown instruction %", instruction->getOpcodeName());

@@ -13,23 +13,15 @@ void Load::handle(Path* path, llvm::Instruction* instruction)
     llvm::Value* sourceAddr = load->getPointerOperand();
 
     ISymbolicState* state = path->getState();
-    MemoryLocation* source = state->getMemoryLoc(sourceAddr);
-
-    llvm::Type* type = load->getType();
+    MemoryLocation* source = static_cast<MemoryLocation*>(state->getExpr(sourceAddr));
 
     UndefinedLoadChecker undefChecker;
     undefChecker.check(load, path);
 
-    if (type->isPointerTy())
-    {
-        state->addMemoryLoc(load, source);
-    }
-    else
-    {
-        NullPointerChecker nullChecker;
-        nullChecker.check(load, path);
-        state->addExpr(load, source->getContent());
-    }
+    NullPointerChecker nullChecker;
+    nullChecker.check(load, path);
+
+    state->addExpr(load, source->getContent());
 
     path->moveToNextInstruction();
 }

@@ -3,20 +3,6 @@
 #include "solver/Solver.h"
 #include "util/Logger.h"
 
-bool SymbolicState::hasMemoryLoc(llvm::Value* address) const
-{
-    return this->memoryLocations.count(address) != 0;
-}
-MemoryLocation* SymbolicState::getMemoryLoc(llvm::Value* address) const
-{
-    assert(this->hasMemoryLoc(address));
-    return this->memoryLocations.at(address);
-}
-void SymbolicState::addMemoryLoc(llvm::Value* address, MemoryLocation* memoryLocation)
-{
-    this->memoryLocations[address] = memoryLocation;
-}
-
 bool SymbolicState::hasExpr(llvm::Value* address) const
 {
     return this->expressions.count(address) != 0;
@@ -28,6 +14,7 @@ Expression* SymbolicState::getExpr(llvm::Value* address) const
 }
 void SymbolicState::addExpr(llvm::Value* address, Expression* expression)
 {
+    this->store(address, expression);
     this->expressions[address] = expression;
 }
 
@@ -61,6 +48,6 @@ void SymbolicState::setConstraints(Path* path, Solver& solver) const
 
 void SymbolicState::store(llvm::Value* address, Expression* expression)
 {
-    assert(this->memory.count(address) == 0);
+    if (this->memory.count(address)) return;
     this->memory[address] = std::unique_ptr<Expression>(expression);
 }
