@@ -24,7 +24,7 @@ void IndexExpression::setContent(Expression* expression)
     // TODO
 }
 
-std::string IndexExpression::getIdentifier() const
+std::string IndexExpression::getIdentifier()
 {
     return this->base->getIdentifier() + "[" + std::to_string(this->index) + "]";
 }

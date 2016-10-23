@@ -20,16 +20,6 @@ void SymbolicState::addExpr(llvm::Value* address, Expression* expression)
 
 void SymbolicState::dump(int priority)
 {
-    for (auto& kv : this->memoryLocations)
-    {
-        kv.second->dump(priority);
-        Logger::get().log(priority, " = ");
-        if (kv.second->getContent() != nullptr)
-        {
-            kv.second->getContent()->dump(priority);
-        }
-        else Logger::get().line(priority, "null");
-    }
     for (auto& kv : this->expressions)
     {
         kv.second->dump(priority);
@@ -38,11 +28,12 @@ void SymbolicState::dump(int priority)
 
 void SymbolicState::setConstraints(Path* path, Solver& solver) const
 {
-    for (auto& kv : this->memoryLocations)
+    for (auto& kv : this->expressions)
     {
-        z3::expr var = kv.second->createConstraint(path);
-        z3::expr value = kv.second->getContent()->createConstraint(path);
-        solver.addConstraint(var == value);
+        if (kv.second->isMemoryLocation())
+        {
+            solver.addMemLoc(static_cast<MemoryLocation*>(kv.second));
+        }
     }
 }
 

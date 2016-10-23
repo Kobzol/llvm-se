@@ -20,11 +20,13 @@ static std::string trim(const std::string &s)
     return (wsback <= wsfront ? std::string() : std::string(wsfront, wsback));
 }
 
-std::unique_ptr<Context> handleCode(const std::string& code)
+std::unique_ptr<Context> handleCode(std::string code)
 {
     testInit();
 
-    std::unique_ptr<llvm::Module> moduleHolder = MemoryCompiler::get().compile(trim(code));
+    code = "void se_mark();\n" + trim(code);
+
+    std::unique_ptr<llvm::Module> moduleHolder = MemoryCompiler::get().compile(code);
     assert(moduleHolder.get());
 
     std::unique_ptr<Context> ctx = std::make_unique<Context>();
@@ -45,5 +47,5 @@ Path* createPath(Context* context, Function* function)
 
 std::string loc(int line)
 {
-    return FILENAME + ":" + std::to_string(line);
+    return FILENAME + ":" + std::to_string(line + 1);
 }

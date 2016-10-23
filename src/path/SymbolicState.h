@@ -24,8 +24,6 @@ public:
 private:
     void store(llvm::Value* address, Expression* expression);
 
-    std::unordered_map<llvm::Value*, MemoryLocation*> memoryLocations;
     std::unordered_map<llvm::Value*, Expression*> expressions;
-
     std::unordered_map<llvm::Value*, std::unique_ptr<Expression>> memory;
 };

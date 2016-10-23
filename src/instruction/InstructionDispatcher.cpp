@@ -9,6 +9,7 @@
 #include "Return.h"
 #include "path/Path.h"
 #include "Load.h"
+#include "Call.h"
 
 InstructionDispatcher::InstructionDispatcher()
 {
@@ -18,6 +19,7 @@ InstructionDispatcher::InstructionDispatcher()
     this->handlers[llvm::Instruction::Br] = std::make_unique<Branch>();
     this->handlers[llvm::Instruction::Ret] = std::make_unique<Return>();
     this->handlers[llvm::Instruction::Load] = std::make_unique<Load>();
+    this->handlers[llvm::Instruction::Call] = std::make_unique<Call>();
 }
 
 void InstructionDispatcher::dispatch(Path* path, llvm::Instruction* instruction)

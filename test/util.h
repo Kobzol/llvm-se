@@ -14,6 +14,6 @@ extern llvm::LLVMContext* llvmCtx;
 extern std::unique_ptr<PathGroup> pathGroup;
 
 void testInit();
-std::unique_ptr<Context> handleCode(const std::string& code);
+std::unique_ptr<Context> handleCode(std::string code);
 Path* createPath(Context* context, Function* function);
 std::string loc(int line);

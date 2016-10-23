@@ -15,25 +15,26 @@ void Branch::handle(Path* path, llvm::Instruction* instruction)
     {
         ExprBuilder builder(path->getState());
         Expression* trueCondition = builder.build(branch->getCondition());
-        Expression* falseCondition = builder.build(
+        Expression* falseCondition = /*builder.build(
                 llvm::CmpInst::Create(
                         llvm::Instruction::OtherOps::ICmp,
                         llvm::CmpInst::Predicate::ICMP_EQ,
                         branch->getCondition(),
                         llvm::ConstantInt::get(llvm::Type::getInt32Ty(instruction->getContext()), 0)
                 )
-        );
+        );*/trueCondition;
 
-        /*std::vector<Expression*> conditions = { trueCondition, falseCondition };
+        std::vector<Expression*> conditions = { trueCondition, falseCondition };
         std::vector<bool> targets = {
                 this->checkSatisfiability(path, trueCondition),
                 this->checkSatisfiability(path, falseCondition)
         };
 
-        std::cerr << "True: " << targets[0] << std::endl;
-        std::cerr << "False: " << targets[1] << std::endl;*/
-
-        exit(0);
+        if (targets[0])
+        {
+            path->jumpTo(this->getFirstInstruction(branch->getSuccessor(0)));
+        }
+        else path->jumpTo(this->getFirstInstruction(branch->getSuccessor(1)));
     }
     else
     {
@@ -48,12 +49,18 @@ llvm::Instruction* Branch::getFirstInstruction(llvm::BasicBlock* block)
     {
         return &inst;
     }
+
+    assert(0);
+
+    return nullptr;
 }
 
 bool Branch::checkSatisfiability(Path* path, Expression* condition)
 {
     std::unique_ptr<Solver> solver = path->createSolver();
     solver->addConstraint(condition->createConstraint(path));
+
+    path->getState()->setConstraints(path, *solver);
 
     return solver->isSatisfiable();
 }

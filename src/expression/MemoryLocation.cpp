@@ -57,7 +57,7 @@ z3::expr MemoryLocation::createConstraint(Path* path)
         throw "1";
     }
 
-    return this->getContent()->createConstraint(path);
+    return path->getContext().int_const(this->getIdentifier().c_str());
 }
 
 bool MemoryLocation::isMemoryLocation() const

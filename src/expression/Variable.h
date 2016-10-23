@@ -10,7 +10,7 @@ public:
     Variable(llvm::Value* value, uint64_t count);
     Variable(llvm::Value* value, uint64_t count, Expression* content);
 
-    virtual std::string getIdentifier() const override;
+    virtual std::string getIdentifier() override;
     void setIdentifier(std::string identifier);
 
 private:

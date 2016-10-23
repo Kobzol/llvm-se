@@ -8,7 +8,8 @@ enum class CheckErrorType
 {
     NullPointerDereference = 0,
     OutOfBoundsAccess = 1,
-    UndefinedLoad = 2
+    UndefinedLoad = 2,
+    SEMark = 10
 };
 
 class CheckError

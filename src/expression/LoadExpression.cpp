@@ -15,12 +15,12 @@ LoadExpression::LoadExpression(llvm::Value* value, MemoryLocation* source)
 void LoadExpression::dump(int priority)
 {
     Logger::get().log(priority, "Load: ");
-    this->source->dump(priority);
+    this->getSource()->dump(priority);
 }
 
 z3::expr LoadExpression::createConstraint(Path* path)
 {
-    return this->getContent()->createConstraint(path);
+    return this->getSource()->createConstraint(path);
 }
 
 bool LoadExpression::isLoad() const
@@ -32,7 +32,7 @@ MemoryLocation* LoadExpression::getSource() const
     return static_cast<MemoryLocation*>(this->getContent());
 }
 
-std::string LoadExpression::getIdentifier() const
+std::string LoadExpression::getIdentifier()
 {
     return this->getSource()->getIdentifier();
 }

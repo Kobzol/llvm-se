@@ -19,7 +19,7 @@ public:
     virtual bool isMemoryLocation() const override;
 
     virtual void dump(int priority) override;
-    virtual std::string getIdentifier() const = 0;
+    virtual std::string getIdentifier() = 0;
 
 protected:
     z3::expr createConstExpr(Path* path);

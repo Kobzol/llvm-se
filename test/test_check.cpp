@@ -99,3 +99,30 @@ TEST_CASE("Check doesn't mistake zero integer for nullptr pointer") {
     const std::vector<CheckError>& errors = ctx->getErrors();
     REQUIRE(errors.size() == 0);
 }
+
+std::string simpleIf = R"(
+    void simpleIf()
+    {
+        int b = 5;
+        int *p = &b;
+        if (*p > 4)
+        {
+            se_mark();
+        }
+        if (*p < 4)
+        {
+            se_mark();
+        }
+    }
+)";
+TEST_CASE("Check handles transitive conditions") {
+    std::unique_ptr<Context> ctx = handleCode(simpleIf);
+    Function* fn = ctx->getFunctionByDemangledName("simpleIf");
+    Path* path = createPath(ctx.get(), fn);
+    pathGroup->exhaust();
+
+    const std::vector<CheckError>& errors = ctx->getErrors();
+    REQUIRE(errors.size() == 1);
+    REQUIRE(errors.at(0).getType() == CheckErrorType::SEMark);
+    REQUIRE(errors.at(0).getLocation() == loc(7));
+}

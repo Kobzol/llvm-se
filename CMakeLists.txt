@@ -105,7 +105,7 @@ add_library(src
     src/check/OutOfBoundsChecker.cpp
     src/instruction/Load.cpp
     src/check/CheckError.cpp
-)
+        src/instruction/Call.cpp src/instruction/Call.h)
 
 # LLVM pass
 add_library(llvmSE SHARED RegisterPass.cpp)
