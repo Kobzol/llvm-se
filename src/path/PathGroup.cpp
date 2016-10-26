@@ -14,10 +14,21 @@ Path* PathGroup::addPath(std::unique_ptr<Path> path)
 
 void PathGroup::exhaust()
 {
-    Path* path = this->paths[0].get();
-    while (!path->isFinished())
+    while (true)
     {
-        path->executeInstruction();
+        size_t size = this->paths.size();
+        bool stop = true;
+        for (size_t i = 0; i < size; i++)
+        {
+            Path* path = this->paths.at(i).get();
+            if (!path->isFinished())
+            {
+                path->executeInstruction();
+                stop = false;
+            }
+        }
+
+        if (stop) break;
     }
 }
 
@@ -29,4 +40,17 @@ void PathGroup::clear()
 Context* PathGroup::getContext() const
 {
     return this->context;
+}
+
+void PathGroup::forkPath(Path* path, Expression* condition, llvm::Instruction* instruction)
+{
+    std::unique_ptr<Path> forked = path->clone();
+    forked->addCondition(condition);
+    forked->jumpTo(instruction);
+    this->paths.push_back(std::move(forked));
+}
+
+const std::vector<std::unique_ptr<Path>>& PathGroup::getPaths() const
+{
+    return this->paths;
 }

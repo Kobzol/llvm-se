@@ -6,6 +6,9 @@
 #include "expression/ExprBuilder.h"
 #include "expression/Expression.h"
 #include "path/Path.h"
+#include "path/PathGroup.h"
+
+static std::vector<std::unique_ptr<llvm::CmpInst>> cmpStorage;
 
 void Branch::handle(Path* path, llvm::Instruction* instruction)
 {
@@ -13,33 +16,51 @@ void Branch::handle(Path* path, llvm::Instruction* instruction)
 
     if (branch->isConditional())
     {
-        ExprBuilder builder(path->getState());
-        Expression* trueCondition = builder.build(branch->getCondition());
-        Expression* falseCondition = /*builder.build(
-                llvm::CmpInst::Create(
-                        llvm::Instruction::OtherOps::ICmp,
-                        llvm::CmpInst::Predicate::ICMP_EQ,
-                        branch->getCondition(),
-                        llvm::ConstantInt::get(llvm::Type::getInt32Ty(instruction->getContext()), 0)
-                )
-        );*/trueCondition;
+        llvm::CmpInst* condition = llvm::dyn_cast<llvm::CmpInst>(branch->getCondition());
+        assert(condition);
 
-        std::vector<Expression*> conditions = { trueCondition, falseCondition };
+        std::unique_ptr<llvm::CmpInst> conditionReverse = std::unique_ptr<llvm::CmpInst>(llvm::CmpInst::Create(
+                condition->getOpcode(),
+                condition->getInversePredicate(),
+                condition->getOperand(0),
+                condition->getOperand(1)
+        ));
+
+        ExprBuilder builder(path->getState());
+        std::vector<Expression*> conditions = {
+                builder.build(condition),
+                builder.build(conditionReverse.get())
+        };
         std::vector<bool> targets = {
-                this->checkSatisfiability(path, trueCondition),
-                this->checkSatisfiability(path, falseCondition)
+                this->checkSatisfiability(path, conditions[0]),
+                this->checkSatisfiability(path, conditions[1])
         };
 
-        if (targets[0])
+        if (targets[0] && targets[1])
         {
-            path->jumpTo(this->getFirstInstruction(branch->getSuccessor(0)));
+            path->getGroup()->forkPath(path, conditions[0], this->getFirstInstruction(branch->getSuccessor(0)));
+            targets[0] = false;
         }
-        else path->jumpTo(this->getFirstInstruction(branch->getSuccessor(1)));
+        else if (!targets[0] && !targets[1])
+        {
+            assert(0); // unreachable code
+        }
+
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            if (targets.at(i))
+            {
+                path->addCondition(conditions[i]);
+                path->jumpTo(this->getFirstInstruction(branch->getSuccessor(i)));   //  0/true/1succ, 1/false/0succ
+                break;
+            }
+        }
+
+        cmpStorage.push_back(std::move(conditionReverse));  // TODO
     }
     else
     {
-        llvm::BasicBlock* jumpTarget = static_cast<llvm::BasicBlock*>(branch->getOperand(0));
-        path->jumpTo(this->getFirstInstruction(jumpTarget));
+        path->jumpTo(this->getFirstInstruction(branch->getSuccessor(0)));
     }
 }
 
@@ -60,6 +81,7 @@ bool Branch::checkSatisfiability(Path* path, Expression* condition)
     std::unique_ptr<Solver> solver = path->createSolver();
     solver->addConstraint(condition->createConstraint(path));
 
+    path->setConditions(*solver);
     path->getState()->setConstraints(path, *solver);
 
     return solver->isSatisfiable();

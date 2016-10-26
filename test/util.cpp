@@ -42,7 +42,9 @@ Path* createPath(Context* context, Function* function)
 {
     pathGroup.reset();
     pathGroup = std::make_unique<PathGroup>(context);
-    return pathGroup->addPath(std::make_unique<Path>(globalStateHolder.get(), function, pathGroup.get()));
+    return pathGroup->addPath(std::make_unique<Path>(globalStateHolder.get(),
+                                                     pathGroup.get(),
+                                                     function->getFirstInstruction()));
 }
 
 std::string loc(int line)

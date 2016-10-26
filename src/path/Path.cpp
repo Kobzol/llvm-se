@@ -9,14 +9,8 @@
 
 z3::context Path::CTX;
 
-Path::Path(ISymbolicState* parentState, Function* function, PathGroup* pathGroup)
-    : Path(parentState, function, pathGroup, function->getFirstInstruction())
-{
-
-}
-
-Path::Path(ISymbolicState* parentState, Function* function, PathGroup* pathGroup, llvm::Instruction* start)
-    : function(function), instruction(start), pathGroup(pathGroup)
+Path::Path(ISymbolicState* parentState, PathGroup* pathGroup, llvm::Instruction* start)
+    : instruction(start), pathGroup(pathGroup)
 {
     this->localState = std::make_unique<SymbolicState>();
     this->state = std::make_unique<WrapperState>(this->localState.get(), parentState);
@@ -61,7 +55,7 @@ void Path::executeInstruction()
 {
     InstructionDispatcher::get().dispatch(this, this->instruction);
 }
-const llvm::Instruction* Path::getInstruction() const
+llvm::Instruction* Path::getInstruction() const
 {
     return this->instruction;
 }
@@ -74,4 +68,29 @@ void Path::setFinished(Expression* value)
 Expression* Path::getReturnValue() const
 {
     return this->returnValue;
+}
+
+void Path::addCondition(Expression* condition)
+{
+    this->pathConditions.push_back(condition);
+}
+
+void Path::setConditions(Solver& solver)
+{
+    for (Expression* exp : this->pathConditions)
+    {
+        solver.addConstraint(exp->createConstraint(this));
+    }
+}
+
+std::unique_ptr<Path> Path::clone()
+{
+    std::unique_ptr<Path> cloned = std::make_unique<Path>(this->state.get(), this->getGroup(), this->getInstruction());
+
+    for (Expression* exp : this->pathConditions)
+    {
+        cloned->pathConditions.push_back(exp);
+    }
+
+    return cloned;
 }

@@ -43,7 +43,7 @@ void Context::handleModule(llvm::Module* module)
     main->getHandle()->dump();
 
     PathGroup pathGroup(this);
-    std::unique_ptr<Path> mainPath = std::make_unique<Path>(state.get(), main, &pathGroup);
+    std::unique_ptr<Path> mainPath = std::make_unique<Path>(state.get(), &pathGroup, main->getFirstInstruction());
     pathGroup.addPath(std::move(mainPath));
     pathGroup.exhaust();
 }

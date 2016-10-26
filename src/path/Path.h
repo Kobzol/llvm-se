@@ -16,8 +16,7 @@ class PathGroup;
 class Path
 {
 public:
-    Path(ISymbolicState* parentState, Function* function, PathGroup* pathGroup);
-    Path(ISymbolicState* parentState, Function* function, PathGroup* pathGroup, llvm::Instruction* start);
+    Path(ISymbolicState* parentState, PathGroup* pathGroup, llvm::Instruction* start);
 
     bool isFinished() const;
     z3::context& getContext();
@@ -32,19 +31,24 @@ public:
     void moveToNextInstruction();
     void jumpTo(llvm::Instruction* instruction);
     void executeInstruction();
-    const llvm::Instruction* getInstruction() const;
+    llvm::Instruction* getInstruction() const;
 
     void dump(int priority);
+
+    void addCondition(Expression* condition);
+    void setConditions(Solver& solver);
+
+    std::unique_ptr<Path> clone();
 
 private:
     static z3::context CTX;
 
     bool finished = false;
-    Function* function;
     llvm::Instruction* instruction;
     PathGroup* pathGroup;
     Expression* returnValue;
 
+    std::vector<Expression*> pathConditions;
     std::unique_ptr<ISymbolicState> state;
     std::unique_ptr<ISymbolicState> localState;
 };

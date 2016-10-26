@@ -119,7 +119,7 @@ set(TEST_SOURCE_FILES
         test/test_path.cpp
         test/test_context.cpp
         test/test_check.cpp
-)
+        test/test_branch.cpp)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)
