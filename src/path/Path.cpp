@@ -1,20 +1,28 @@
 #include <instruction/InstructionDispatcher.h>
 
 #include <llvm/IR/BasicBlock.h>
-#include <llvm/IR/Instruction.h>
 #include <util/Logger.h>
 
-#include "SymbolicState.h"
-#include "WrapperState.h"
+#include "state/SymbolicState.h"
+#include "state/StateWrapper.h"
 #include "Path.h"
 
 z3::context Path::CTX;
 
-Path::Path(ISymbolicState* parentState, PathGroup* pathGroup, llvm::Instruction* start)
-    : instruction(start), pathGroup(pathGroup)
+
+Path::Path(std::vector<ISymbolicState*> parentStates, PathGroup* pathGroup, llvm::Instruction* start)
+    : Path(parentStates, std::make_unique<SymbolicState>(), pathGroup, start)
 {
-    this->localState = std::make_unique<SymbolicState>();
-    this->state = std::make_unique<WrapperState>(this->localState.get(), parentState);
+
+}
+Path::Path(std::vector<ISymbolicState*> parentStates, std::unique_ptr<ISymbolicState> localState,
+           PathGroup* pathGroup, llvm::Instruction* start)
+        : instruction(start),
+          pathGroup(pathGroup),
+          localState(std::move(localState))
+{
+    parentStates.push_back(this->localState.get());
+    this->state = std::make_unique<StateWrapper>(parentStates);
 }
 
 bool Path::isFinished() const
@@ -25,10 +33,11 @@ z3::context& Path::getContext()
 {
     return Path::CTX;
 }
-ISymbolicState* Path::getState() const
+StateWrapper* Path::getState() const
 {
     return this->state.get();
 }
+
 PathGroup* Path::getGroup() const
 {
     return this->pathGroup;
@@ -41,7 +50,7 @@ std::unique_ptr<Solver> Path::createSolver()
 
 void Path::dump(int priority)
 {
-    this->state->dump(priority);
+    this->getState()->dump(priority);
 }
 
 void Path::moveToNextInstruction()
@@ -54,9 +63,6 @@ void Path::jumpTo(llvm::Instruction* instruction)
 }
 void Path::executeInstruction()
 {
-    //Logger::get().line("Path % executing %", this);
-    //this->instruction->dump();
-    //Logger::get().line("");
     InstructionDispatcher::get().dispatch(this, this->instruction);
 }
 llvm::Instruction* Path::getInstruction() const
@@ -89,7 +95,13 @@ void Path::setConditions(Solver& solver)
 
 std::unique_ptr<Path> Path::clone()
 {
-    std::unique_ptr<Path> cloned = std::make_unique<Path>(this->state.get(), this->getGroup(), this->getInstruction());
+    std::vector<ISymbolicState*> states = this->getState()->getStates();
+    states.pop_back();  // remove the local state, which will be copied
+
+    std::unique_ptr<Path> cloned = std::make_unique<Path>(states,
+                                                          this->localState->clone(),
+                                                          this->getGroup(),
+                                                          this->getInstruction());
 
     for (Expression* exp : this->pathConditions)
     {
@@ -97,4 +109,22 @@ std::unique_ptr<Path> Path::clone()
     }
 
     return cloned;
+}
+
+void Path::mergeGlobalsTo(Path* path)
+{
+    ISymbolicState* local = path->getState()->getLocalState();
+
+    for (auto& kv : this->getState()->getGlobalUpdates())
+    {
+        if (kv.second.getState() == local)
+        {
+            MemoryLocation* src = static_cast<MemoryLocation*>(local->getExpr(kv.first));
+            src->setContent(kv.second.getExpr());
+        }
+        else
+        {
+            path->getState()->storeGlobalUpdate(kv.first, kv.second.getState(), kv.second.getExpr());
+        }
+    }
 }

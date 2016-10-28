@@ -42,9 +42,13 @@ Path* createPath(Context* context, Function* function)
 {
     pathGroup.reset();
     pathGroup = std::make_unique<PathGroup>(context);
-    return pathGroup->addPath(std::make_unique<Path>(globalStateHolder.get(),
+    return pathGroup->addPath(std::make_unique<Path>(std::vector<ISymbolicState*>{ globalStateHolder.get() },
                                                      pathGroup.get(),
                                                      function->getFirstInstruction()));
+}
+Path* createEmptyPath()
+{
+    return new Path(std::vector<ISymbolicState*>(), nullptr, nullptr);
 }
 
 std::string loc(int line)
@@ -56,9 +60,13 @@ bool check_int_eq(Path* path, std::string name, int64_t value)
 {
     std::unique_ptr<Solver> solver = path->createSolver();
     path->setConditions(*solver);
-    path->getState()->setConstraints(path, *solver);
 
     solver->addConstraint(solver->getContext().int_val(
             static_cast<int>(value)) == solver->getContext().int_const(name.c_str()));
     return solver->isSatisfiable();
+}
+
+llvm::Value* addr(int i)
+{
+    return reinterpret_cast<llvm::Value*>(i);
 }

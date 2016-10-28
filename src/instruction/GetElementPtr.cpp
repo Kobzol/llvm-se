@@ -10,7 +10,7 @@
 
 void GetElementPtr::handle(Path* path, llvm::Instruction* instruction)
 {
-    llvm::GetElementPtrInst* gep = static_cast<llvm::GetElementPtrInst*>(instruction);
+    /*llvm::GetElementPtrInst* gep = static_cast<llvm::GetElementPtrInst*>(instruction);
 
     ISymbolicState* state = path->getState();
     int64_t constantIndex = 0;
@@ -30,7 +30,7 @@ void GetElementPtr::handle(Path* path, llvm::Instruction* instruction)
     else
     {
         assert(0);
-    }
+    }*/
 
     path->moveToNextInstruction();
 }

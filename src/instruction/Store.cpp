@@ -6,6 +6,7 @@
 
 #include "expression/ExprBuilder.h"
 #include "expression/MemoryLocation.h"
+#include "state/StateWrapper.h"
 #include "path/Path.h"
 #include "util/DebugUtil.h"
 
@@ -19,17 +20,25 @@ void Store::handle(Path* path, llvm::Instruction* instruction)
     ExprBuilder builder(path->getState());
     Expression* assignment = builder.build(source);
 
-    instruction->dump();
+    StateWrapper* state = path->getState();
+    StateExprMapping mapping = state->findExpr(targetAddr);
 
-    std::unique_ptr<Expression> target = path->getState()->copyExpr(targetAddr);
-    path->getState()->addExpr(targetAddr, target.get());
+    Expression* target;
+    if (state->isLocalState(mapping.getState()))
+    {
+        target = mapping.getExpr();
+    }
+    else
+    {
+        std::unique_ptr<Expression> copy = mapping.getExpr()->clone();
+        state->storeGlobalUpdate(targetAddr, mapping.getState(), copy.get());
+        state->addExpr(targetAddr, copy.get());
+        target = copy.get();
+        copy.release();
+    }
+
     assert(target->isMemoryLocation());
-
-    static_cast<MemoryLocation*>(target.get())->setContent(assignment);
-
-    path->dump(Logger::DEBUG);
-
-    target.release();
+    static_cast<MemoryLocation*>(target)->setContent(assignment);
 
     path->moveToNextInstruction();
 }

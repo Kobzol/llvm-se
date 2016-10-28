@@ -94,8 +94,8 @@ add_library(src
     src/util/compile/MemoryCompiler.cpp
     src/instruction/GetElementPtr.cpp
     src/expression/IndexExpression.cpp
-    src/path/SymbolicState.cpp
-    src/path/WrapperState.cpp
+    src/state/SymbolicState.cpp
+    src/state/StateWrapper.cpp
     src/path/PathGroup.cpp
     src/instruction/InstructionDispatcher.cpp
     src/expression/Variable.cpp
@@ -105,7 +105,7 @@ add_library(src
     src/check/OutOfBoundsChecker.cpp
     src/instruction/Load.cpp
     src/check/CheckError.cpp
-        src/instruction/Call.cpp src/instruction/Call.h)
+    src/instruction/Call.cpp)
 
 # LLVM pass
 add_library(llvmSE SHARED RegisterPass.cpp)
@@ -119,7 +119,8 @@ set(TEST_SOURCE_FILES
         test/test_path.cpp
         test/test_context.cpp
         test/test_check.cpp
-        test/test_branch.cpp)
+        test/test_branch.cpp
+        test/unittest/unit_path.cpp)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)

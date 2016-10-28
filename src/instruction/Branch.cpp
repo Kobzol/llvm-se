@@ -83,7 +83,7 @@ bool Branch::checkSatisfiability(Path* path, Expression* condition)
     solver->addConstraint(condition->createConstraint(path));
 
     path->setConditions(*solver);
-    path->getState()->setConstraints(path, *solver);
+    // TODO
 
     return solver->isSatisfiable();
 }

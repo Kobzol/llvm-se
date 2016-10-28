@@ -12,8 +12,7 @@ void Load::handle(Path* path, llvm::Instruction* instruction)
     llvm::LoadInst* load = static_cast<llvm::LoadInst*>(instruction);
     llvm::Value* sourceAddr = load->getPointerOperand();
 
-    ISymbolicState* state = path->getState();
-    MemoryLocation* source = static_cast<MemoryLocation*>(state->getExpr(sourceAddr));
+    MemoryLocation* source = static_cast<MemoryLocation*>(path->getState()->getExpr(sourceAddr));
 
     UndefinedLoadChecker undefChecker;
     undefChecker.check(load, path);
@@ -24,10 +23,9 @@ void Load::handle(Path* path, llvm::Instruction* instruction)
     if (!source->isUndefined() && source->isLoad())
     {
         source = static_cast<MemoryLocation*>(static_cast<LoadExpression*>(source)->getSource()->getContent());
-        //assert(source->isMemoryLocation());
     }
 
-    state->addExpr(load, new LoadExpression(load, source));
+    path->getState()->addExpr(load, new LoadExpression(load, source));
 
     path->moveToNextInstruction();
 }

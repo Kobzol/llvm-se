@@ -20,7 +20,7 @@ ExprBuilder::ExprBuilder(ISymbolicState* state) : state(state)
 Expression* ExprBuilder::build(llvm::Value* value)
 {
     if (value == nullptr) return nullptr;
-    if (this->state->hasExpr(value)) return this->state->getExpr(value);
+    if (this->hasExpr(value)) return this->getExpr(value);
 
     if (auto* constant = llvm::dyn_cast<llvm::Constant>(value))
     {
@@ -91,12 +91,6 @@ Expression* ExprBuilder::buildInstruction(llvm::Instruction* instruction)
     else if (auto* load = llvm::dyn_cast<llvm::LoadInst>(instruction))
     {
         assert(0);
-        /*Logger::get().line("Load");
-        llvm::Value* loadExpr = load->getPointerOperand();
-        if (this->state->hasExpr(loadExpr))
-        {
-            return this->add(new LoadExpression(instruction, this->state->getExpr(loadExpr)));
-        }*/
     }
 
     Logger::get().line(Logger::Prio::WARNING, "Unknown instruction %", instruction->getOpcodeName());
@@ -155,4 +149,14 @@ Expression* ExprBuilder::add(Expression* expression)
     }
 
     return expression;
+}
+
+bool ExprBuilder::hasExpr(llvm::Value* address) const
+{
+    return this->state->hasExpr(address);
+}
+
+Expression* ExprBuilder::getExpr(llvm::Value* address) const
+{
+    return this->state->getExpr(address);
 }

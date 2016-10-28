@@ -2,10 +2,11 @@
 
 #include <memory>
 
-#include "ISymbolicState.h"
+#include "state/ISymbolicState.h"
 
 #include "program/Function.h"
 #include "solver/Solver.h"
+#include "state/StateWrapper.h"
 
 namespace llvm {
     class Instruction;
@@ -16,11 +17,13 @@ class PathGroup;
 class Path
 {
 public:
-    Path(ISymbolicState* parentState, PathGroup* pathGroup, llvm::Instruction* start);
+    Path(std::vector<ISymbolicState*> parentStates, PathGroup* pathGroup, llvm::Instruction* start);
+    Path(std::vector<ISymbolicState*> parentStates, std::unique_ptr<ISymbolicState> localState,
+         PathGroup* pathGroup, llvm::Instruction* start);
 
     bool isFinished() const;
     z3::context& getContext();
-    ISymbolicState* getState() const;
+    StateWrapper* getState() const;
     PathGroup* getGroup() const;
 
     std::unique_ptr<Solver> createSolver();
@@ -40,6 +43,8 @@ public:
 
     std::unique_ptr<Path> clone();
 
+    void mergeGlobalsTo(Path* path);
+
 private:
     static z3::context CTX;
 
@@ -49,6 +54,6 @@ private:
     Expression* returnValue;
 
     std::vector<Expression*> pathConditions;
-    std::unique_ptr<ISymbolicState> state;
     std::unique_ptr<ISymbolicState> localState;
+    std::unique_ptr<StateWrapper> state;
 };

@@ -6,7 +6,7 @@
 #include <llvm/IR/Module.h>
 
 #include "check/CheckError.h"
-#include "path/SymbolicState.h"
+#include "state/SymbolicState.h"
 #include "program/Function.h"
 
 class Context

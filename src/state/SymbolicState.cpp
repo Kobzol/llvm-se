@@ -26,17 +26,6 @@ void SymbolicState::dump(int priority)
     }
 }
 
-void SymbolicState::setConstraints(Path* path, Solver& solver) const
-{
-    for (auto& kv : this->expressions)
-    {
-        if (kv.second->isMemoryLocation())
-        {
-            solver.addMemLoc(static_cast<MemoryLocation*>(kv.second));
-        }
-    }
-}
-
 void SymbolicState::store(llvm::Value* address, Expression* expression)
 {
     if (this->memoryMap.count(expression)) return;
@@ -44,8 +33,16 @@ void SymbolicState::store(llvm::Value* address, Expression* expression)
     this->memory.push_back(std::unique_ptr<Expression>(expression));
 }
 
-std::unique_ptr<Expression> SymbolicState::copyExpr(llvm::Value* address)
+std::unique_ptr<ISymbolicState> SymbolicState::clone()
 {
-    assert(this->hasExpr(address));
-    return this->getExpr(address)->clone();
+    std::unique_ptr<ISymbolicState> clone = std::make_unique<SymbolicState>();
+
+    for (auto& kv : this->expressions)
+    {
+        std::unique_ptr<Expression> exprClone = kv.second->clone();
+        clone->addExpr(kv.first, exprClone.get());
+        exprClone.release();
+    }
+
+    return clone;
 }

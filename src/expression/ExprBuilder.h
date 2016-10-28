@@ -14,6 +14,7 @@ namespace llvm {
 
 class Expression;
 class ISymbolicState;
+class Path;
 
 class ExprBuilder
 {
@@ -33,6 +34,9 @@ private:
     int64_t createIntConstant(llvm::ConstantInt* intConstant);
 
     Expression* add(Expression* expression);
+
+    bool hasExpr(llvm::Value* address) const;
+    Expression* getExpr(llvm::Value* address) const;
 
     ISymbolicState* state;
 };

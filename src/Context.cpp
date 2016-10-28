@@ -32,7 +32,6 @@ void Context::handleModule(llvm::Module* module)
         this->functions.push_back(std::make_unique<Function>(&fn));
     }
 
-    std::unique_ptr<SymbolicState> state = this->createGlobalState(module);
     Function* main = this->getFunctionByName("main");
 
     if (!main)
@@ -43,7 +42,10 @@ void Context::handleModule(llvm::Module* module)
     main->getHandle()->dump();
 
     PathGroup pathGroup(this);
-    std::unique_ptr<Path> mainPath = std::make_unique<Path>(state.get(), &pathGroup, main->getFirstInstruction());
+    std::unique_ptr<SymbolicState> state = this->createGlobalState(module);
+    std::unique_ptr<Path> mainPath = std::make_unique<Path>(std::vector<ISymbolicState*>{ state.get() },
+                                                              &pathGroup,
+                                                              main->getFirstInstruction());
     pathGroup.addPath(std::move(mainPath));
     pathGroup.exhaust();
 }
