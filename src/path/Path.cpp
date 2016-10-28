@@ -113,6 +113,7 @@ std::unique_ptr<Path> Path::clone()
 
 void Path::mergeGlobalsTo(Path* path)
 {
+    // TODO: release the std::unique_ptrs in this path when merging with the given path!!!
     ISymbolicState* local = path->getState()->getLocalState();
 
     for (auto& kv : this->getState()->getGlobalUpdates())

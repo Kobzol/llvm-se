@@ -9,7 +9,7 @@
 #include "Return.h"
 #include "path/Path.h"
 #include "Load.h"
-#include "Call.h"
+#include "instruction/call/Call.h"
 
 InstructionDispatcher::InstructionDispatcher()
 {

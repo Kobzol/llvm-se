@@ -34,5 +34,14 @@ bool Function::isUser() const
 
 llvm::Instruction* Function::getFirstInstruction()
 {
-    return this->getHandle()->getEntryBlock().getFirstNonPHI();
+    for (llvm::BasicBlock& bb : this->getHandle()->getBasicBlockList())
+    {
+        for (llvm::Instruction& inst : bb.getInstList())
+        {
+            return &inst;
+        }
+    }
+
+    assert(0);
+    return nullptr;
 }

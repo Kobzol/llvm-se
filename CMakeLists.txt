@@ -20,52 +20,52 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(Z3_LIB z3)
 set(CLANG_LIB
-        clangCodeGen
-        clangFrontend
-        clangSerialization
-        clangDriver
-        clangParse
-        clangSema
-        clangAnalysis
-        clangAST
-        clangBasic
-        clangEdit
-        clangLex
-        clangTooling
-        LLVMLinker
-        LLVMIRReader
-        LLVMMIRParser # AsmParser
-        LLVMAsmParser
-        LLVMBitWriter
-        LLVMLTO
-        LLVMObjCARCOpts
-        LLVMInstrumentation
-        LLVMX86AsmParser # MC, MCParser, Support, X86Desc, X86Info
-        LLVMX86Desc # MC, Support, X86AsmPrinter, X86Info
-        LLVMX86AsmPrinter # MC, Support, X86Utils
-        LLVMX86Info # MC, Support, Target
-        LLVMX86Utils # Core, Support
-        LLVMipo
-        LLVMCoverage
-        LLVMProfileData
-        LLVMScalarOpts
-        LLVMInstCombine
-        LLVMCodeGen
-        LLVMTransformUtils
-        LLVMVectorize
-        LLVMAnalysis
-        LLVMTarget
-        LLVMOption # Support
-        LLVMMCParser # MC, Support
-        LLVMMCJIT
-        LLVMObject # BitReader, Core, Support
-        LLVMMC # Object, Support
-        LLVMExecutionEngine
-        LLVMBitReader # Core, Support
-        LLVMCore # Support
-        LLVMSupport
-        dl
-        pthread
+    clangCodeGen
+    clangFrontend
+    clangSerialization
+    clangDriver
+    clangParse
+    clangSema
+    clangAnalysis
+    clangAST
+    clangBasic
+    clangEdit
+    clangLex
+    clangTooling
+    LLVMLinker
+    LLVMIRReader
+    LLVMMIRParser # AsmParser
+    LLVMAsmParser
+    LLVMBitWriter
+    LLVMLTO
+    LLVMObjCARCOpts
+    LLVMInstrumentation
+    LLVMX86AsmParser # MC, MCParser, Support, X86Desc, X86Info
+    LLVMX86Desc # MC, Support, X86AsmPrinter, X86Info
+    LLVMX86AsmPrinter # MC, Support, X86Utils
+    LLVMX86Info # MC, Support, Target
+    LLVMX86Utils # Core, Support
+    LLVMipo
+    LLVMCoverage
+    LLVMProfileData
+    LLVMScalarOpts
+    LLVMInstCombine
+    LLVMCodeGen
+    LLVMTransformUtils
+    LLVMVectorize
+    LLVMAnalysis
+    LLVMTarget
+    LLVMOption # Support
+    LLVMMCParser # MC, Support
+    LLVMMCJIT
+    LLVMObject # BitReader, Core, Support
+    LLVMMC # Object, Support
+    LLVMExecutionEngine
+    LLVMBitReader # Core, Support
+    LLVMCore # Support
+    LLVMSupport
+    dl
+    pthread
 )
 
 add_library(src
@@ -105,7 +105,11 @@ add_library(src
     src/check/OutOfBoundsChecker.cpp
     src/instruction/Load.cpp
     src/check/CheckError.cpp
-    src/instruction/Call.cpp)
+    src/instruction/call/Call.cpp
+    src/instruction/call/CallHandler.cpp
+    src/instruction/call/LLVMCallHandler.cpp
+    src/instruction/call/SEMarkCallHandler.cpp
+    src/instruction/call/StandardCallHandler.cpp)
 
 # LLVM pass
 add_library(llvmSE SHARED RegisterPass.cpp)
@@ -114,13 +118,15 @@ target_link_libraries(llvmSE ${Z3_LIB})
 
 # Test
 set(TEST_SOURCE_FILES
-        test/run_test.cpp
-        test/util.cpp
-        test/test_path.cpp
-        test/test_context.cpp
-        test/test_check.cpp
-        test/test_branch.cpp
-        test/unittest/unit_path.cpp)
+    test/run_test.cpp
+    test/util.cpp
+    test/test_path.cpp
+    test/test_context.cpp
+    test/test_check.cpp
+    test/test_branch.cpp
+    test/test_call.cpp
+    test/unittest/unit_path.cpp
+)
 
 add_executable(unittest ${TEST_SOURCE_FILES})
 target_link_libraries(unittest src)
