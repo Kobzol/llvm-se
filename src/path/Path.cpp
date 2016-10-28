@@ -2,6 +2,7 @@
 
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Instruction.h>
+#include <util/Logger.h>
 
 #include "SymbolicState.h"
 #include "WrapperState.h"
@@ -53,6 +54,9 @@ void Path::jumpTo(llvm::Instruction* instruction)
 }
 void Path::executeInstruction()
 {
+    //Logger::get().line("Path % executing %", this);
+    //this->instruction->dump();
+    //Logger::get().line("");
     InstructionDispatcher::get().dispatch(this, this->instruction);
 }
 llvm::Instruction* Path::getInstruction() const

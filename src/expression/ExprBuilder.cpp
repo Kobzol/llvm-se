@@ -22,11 +22,8 @@ Expression* ExprBuilder::build(llvm::Value* value)
     if (value == nullptr) return nullptr;
     if (this->state->hasExpr(value)) return this->state->getExpr(value);
 
-    Logger::get().line("Building value %", value);
-
     if (auto* constant = llvm::dyn_cast<llvm::Constant>(value))
     {
-        Logger::get().line("Constant");
         return this->buildConstant(constant);
     }
     else if (auto* inst = llvm::dyn_cast<llvm::Instruction>(value))
@@ -85,12 +82,10 @@ Expression* ExprBuilder::buildInstruction(llvm::Instruction* instruction)
 {
     if (auto* bin = llvm::dyn_cast<llvm::BinaryOperator>(instruction))
     {
-        Logger::get().line("BinOp");
         return this->buildBinaryOperator(bin);
     }
     else if (auto* cmp = llvm::dyn_cast<llvm::CmpInst>(instruction))
     {
-        Logger::get().line("Cmp");
         return this->buildCmp(cmp);
     }
     else if (auto* load = llvm::dyn_cast<llvm::LoadInst>(instruction))

@@ -48,7 +48,7 @@ z3::context& Solver::getContext()
 void Solver::addMemLoc(MemoryLocation* memLoc)
 {
     Expression* content = memLoc->getContent();
-    if (content != nullptr && !memLoc->isLoad())
+    if (content != nullptr && !memLoc->isLoad() && !content->isUnknown())
     {
         z3::expr var = memLoc->createConstraint(this->path);
         z3::expr value = content->createConstraint(this->path);

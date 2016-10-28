@@ -17,3 +17,5 @@ void testInit();
 std::unique_ptr<Context> handleCode(std::string code);
 Path* createPath(Context* context, Function* function);
 std::string loc(int line);
+
+bool check_int_eq(Path* path, std::string name, int64_t value);

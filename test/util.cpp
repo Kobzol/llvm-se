@@ -51,3 +51,14 @@ std::string loc(int line)
 {
     return FILENAME + ":" + std::to_string(line + 1);
 }
+
+bool check_int_eq(Path* path, std::string name, int64_t value)
+{
+    std::unique_ptr<Solver> solver = path->createSolver();
+    path->setConditions(*solver);
+    path->getState()->setConstraints(path, *solver);
+
+    solver->addConstraint(solver->getContext().int_val(
+            static_cast<int>(value)) == solver->getContext().int_const(name.c_str()));
+    return solver->isSatisfiable();
+}

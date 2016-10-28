@@ -13,6 +13,8 @@ public:
     virtual Expression* getExpr(llvm::Value* address) const override;
     virtual void addExpr(llvm::Value* address, Expression* expression) override;
 
+    virtual std::unique_ptr<Expression> copyExpr(llvm::Value* address) override;
+
     virtual void setConstraints(Path* path, Solver& solver) const override;
 
     virtual void dump(int priority) override;

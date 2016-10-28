@@ -26,3 +26,14 @@ void Variable::setIdentifier(std::string identifier)
 {
     this->identifier = identifier;
 }
+
+std::unique_ptr<Expression> Variable::clone()
+{
+    std::unique_ptr<Variable> var = std::make_unique<Variable>(this->getValue(), this->getCount());
+    var->setContent(this->getContent());
+    var->setIdentifier(this->getIdentifier());
+
+    std::unique_ptr<Expression> ret = std::unique_ptr<Expression>(var.get());
+    var.release();
+    return ret;
+}

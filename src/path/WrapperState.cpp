@@ -34,3 +34,15 @@ void WrapperState::setConstraints(Path* path, Solver& solver) const
     this->primary->setConstraints(path, solver);
     this->secondary->setConstraints(path, solver);
 }
+
+std::unique_ptr<Expression> WrapperState::copyExpr(llvm::Value* address)
+{
+    if (this->primary->hasExpr(address))
+    {
+        return this->primary->copyExpr(address);
+    }
+    else if (this->secondary->hasExpr(address))
+    {
+        return this->secondary->copyExpr(address);
+    }
+}

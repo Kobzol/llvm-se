@@ -39,6 +39,13 @@ void SymbolicState::setConstraints(Path* path, Solver& solver) const
 
 void SymbolicState::store(llvm::Value* address, Expression* expression)
 {
-    if (this->memory.count(address)) return;
-    this->memory[address] = std::unique_ptr<Expression>(expression);
+    if (this->memoryMap.count(expression)) return;
+    this->memoryMap.insert(expression);
+    this->memory.push_back(std::unique_ptr<Expression>(expression));
+}
+
+std::unique_ptr<Expression> SymbolicState::copyExpr(llvm::Value* address)
+{
+    assert(this->hasExpr(address));
+    return this->getExpr(address)->clone();
 }

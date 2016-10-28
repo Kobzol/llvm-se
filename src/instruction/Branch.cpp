@@ -2,6 +2,7 @@
 
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Constants.h>
+#include <cassert>
 
 #include "expression/ExprBuilder.h"
 #include "expression/Expression.h"
@@ -51,7 +52,7 @@ void Branch::handle(Path* path, llvm::Instruction* instruction)
             if (targets.at(i))
             {
                 path->addCondition(conditions[i]);
-                path->jumpTo(this->getFirstInstruction(branch->getSuccessor(i)));   //  0/true/1succ, 1/false/0succ
+                path->jumpTo(this->getFirstInstruction(branch->getSuccessor(i)));
                 break;
             }
         }

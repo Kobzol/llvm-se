@@ -17,3 +17,8 @@ z3::expr UnknownExpression::createConstraint(Path* path)
 {
     return path->getContext().bool_val(true);
 }
+
+bool UnknownExpression::isUnknown() const
+{
+    return true;
+}

@@ -38,3 +38,13 @@ bool Expression::isLoad() const
 {
     return false;
 }
+bool Expression::isUnknown() const
+{
+    return false;
+}
+
+std::unique_ptr<Expression> Expression::clone()
+{
+    assert(0);
+    return std::unique_ptr<Expression>();
+}

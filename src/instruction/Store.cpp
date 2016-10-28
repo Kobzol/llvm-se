@@ -2,6 +2,7 @@
 
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
+#include <util/Logger.h>
 
 #include "expression/ExprBuilder.h"
 #include "expression/MemoryLocation.h"
@@ -17,10 +18,18 @@ void Store::handle(Path* path, llvm::Instruction* instruction)
 
     ExprBuilder builder(path->getState());
     Expression* assignment = builder.build(source);
-    Expression* target = path->getState()->getExpr(targetAddr);
+
+    instruction->dump();
+
+    std::unique_ptr<Expression> target = path->getState()->copyExpr(targetAddr);
+    path->getState()->addExpr(targetAddr, target.get());
     assert(target->isMemoryLocation());
 
-    static_cast<MemoryLocation*>(target)->setContent(assignment);
+    static_cast<MemoryLocation*>(target.get())->setContent(assignment);
+
+    path->dump(Logger::DEBUG);
+
+    target.release();
 
     path->moveToNextInstruction();
 }

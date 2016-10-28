@@ -20,7 +20,7 @@ void Context::handleModule(llvm::Module* module)
 {
     this->activeModule = module;
 
-    Logger::get().setPriority(Logger::Prio::INFO);
+    //Logger::get().setPriority(Logger::Prio::INFO);
 
     for (auto& fn : module->getFunctionList())
     {
