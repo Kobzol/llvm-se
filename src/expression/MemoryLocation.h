@@ -18,6 +18,8 @@ public:
     virtual z3::expr createConstraint(Path* path) override;
     virtual bool isMemoryLocation() const override;
 
+    virtual std::unique_ptr<Expression> clone() override = 0;
+
     virtual void dump(int priority) override;
     virtual std::string getIdentifier() = 0;
 

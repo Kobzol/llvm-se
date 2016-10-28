@@ -18,14 +18,16 @@ TEST_CASE("Satisfiable branch is taken and unsatisfiable is ignored") {
     Path* path = createPath(ctx.get(), fn);
     pathGroup->exhaust();
 
-    REQUIRE(pathGroup->getPaths().size() == 1);
+    REQUIRE(pathGroup->getPaths().size() == 2);
 
     const std::vector<CheckError>& errors = ctx->getErrors();
-    REQUIRE(errors.size() == 1);
+    REQUIRE(errors.size() == 2);
 
     const CheckError& error = errors.at(0);
     REQUIRE(error.getType() == CheckErrorType::SEMark);
-    REQUIRE(error.getLocation() == loc(7));
+
+    bool valid = (error.getLocation() == loc(7)) || (error.getLocation() == loc(9));
+    REQUIRE(valid);
 }
 
 std::string simpleCow = R"(

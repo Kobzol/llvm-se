@@ -36,3 +36,8 @@ std::string LoadExpression::getIdentifier()
 {
     return this->getSource()->getIdentifier();
 }
+
+std::unique_ptr<Expression> LoadExpression::clone()
+{
+    return std::make_unique<LoadExpression>(this->getValue(), this->getSource());
+}

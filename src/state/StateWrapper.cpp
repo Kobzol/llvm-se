@@ -55,7 +55,7 @@ Expression* StateWrapper::getExpr(llvm::Value* address) const
 
 void StateWrapper::addExpr(llvm::Value* address, Expression* expression)
 {
-    this->states.back()->addExpr(address, expression);
+    this->getLocalState()->addExpr(address, expression);
 }
 
 void StateWrapper::dump(int priority)

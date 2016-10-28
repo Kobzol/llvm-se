@@ -26,7 +26,7 @@ public:
     virtual bool isLoad() const;
     virtual bool isUnknown() const;
 
-    virtual std::unique_ptr<Expression> clone() = 0;
+    virtual std::unique_ptr<Expression> clone();
 
     virtual void dump(int priority = 0);
 

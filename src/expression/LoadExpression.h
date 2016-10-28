@@ -14,4 +14,6 @@ public:
 
     virtual z3::expr createConstraint(Path* path) override;
     virtual std::string getIdentifier() override;
+
+    virtual std::unique_ptr<Expression> clone() override;
 };

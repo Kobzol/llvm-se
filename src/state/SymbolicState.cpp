@@ -39,9 +39,14 @@ std::unique_ptr<ISymbolicState> SymbolicState::clone()
 
     for (auto& kv : this->expressions)
     {
-        std::unique_ptr<Expression> exprClone = kv.second->clone();
-        clone->addExpr(kv.first, exprClone.get());
-        exprClone.release();
+        Expression* expr = kv.second;
+        if (kv.second->isMemoryLocation())
+        {
+            std::unique_ptr<Expression> exprClone = kv.second->clone();
+            expr = exprClone.get();
+            exprClone.release();
+        }
+        clone->addExpr(kv.first, expr);
     }
 
     return clone;

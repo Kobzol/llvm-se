@@ -122,7 +122,7 @@ TEST_CASE("Check handles transitive conditions") {
     pathGroup->exhaust();
 
     const std::vector<CheckError>& errors = ctx->getErrors();
-    REQUIRE(errors.size() == 1);
+    REQUIRE(errors.size() == 2);
     REQUIRE(errors.at(0).getType() == CheckErrorType::SEMark);
     REQUIRE(errors.at(0).getLocation() == loc(7));
 }
