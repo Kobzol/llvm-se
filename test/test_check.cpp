@@ -13,12 +13,12 @@ TEST_CASE("Check detects simple undefined loads") {
     Path* path = createPath(ctx.get(), fn);
     pathGroup->exhaust();
 
-    const std::vector<CheckError>& errors = ctx->getErrors();
+    const std::vector<std::unique_ptr<CheckError>>& errors = ctx->getErrors();
     REQUIRE(errors.size() == 1);
 
-    const CheckError& error = errors.at(0);
-    REQUIRE(error.getType() == CheckErrorType::UndefinedLoad);
-    REQUIRE(error.getLocation() == loc(4));
+    CheckError* error = errors.at(0).get();
+    REQUIRE(error->getType() == CheckErrorType::UndefinedLoad);
+    REQUIRE(error->getLocation() == loc(4));
 }
 
 std::string transitiveUL = R"(
@@ -36,10 +36,10 @@ TEST_CASE("Check detects transitive undefined loads") {
     Path* path = createPath(ctx.get(), fn);
     pathGroup->exhaust();
 
-    const std::vector<CheckError>& errors = ctx->getErrors();
+    const std::vector<std::unique_ptr<CheckError>>& errors = ctx->getErrors();
     REQUIRE(errors.size() == 1);
-    REQUIRE(errors.at(0).getType() == CheckErrorType::UndefinedLoad);
-    REQUIRE(errors.at(0).getLocation() == loc(6));
+    REQUIRE(errors.at(0)->getType() == CheckErrorType::UndefinedLoad);
+    REQUIRE(errors.at(0)->getLocation() == loc(6));
 }
 
 std::string simpleNull = R"(
@@ -55,12 +55,12 @@ TEST_CASE("Check detects simple null pointer dereferences") {
     Path* path = createPath(ctx.get(), fn);
     pathGroup->exhaust();
 
-    const std::vector<CheckError>& errors = ctx->getErrors();
+    const std::vector<std::unique_ptr<CheckError>>& errors = ctx->getErrors();
     REQUIRE(errors.size() == 1);
 
-    const CheckError& error = errors.at(0);
-    REQUIRE(error.getType() == CheckErrorType::NullPointerDereference);
-    REQUIRE(error.getLocation() == loc(4));
+    CheckError* error = errors.at(0).get();
+    REQUIRE(error->getType() == CheckErrorType::NullPointerDereference);
+    REQUIRE(error->getLocation() == loc(4));
 }
 
 std::string transitiveNull = R"(
@@ -77,10 +77,10 @@ TEST_CASE("Check detects transitive null pointer dereferences") {
     Path* path = createPath(ctx.get(), fn);
     pathGroup->exhaust();
 
-    const std::vector<CheckError>& errors = ctx->getErrors();
+    const std::vector<std::unique_ptr<CheckError>>& errors = ctx->getErrors();
     REQUIRE(errors.size() == 1);
-    REQUIRE(errors.at(0).getType() == CheckErrorType::NullPointerDereference);
-    REQUIRE(errors.at(0).getLocation() == loc(5));
+    REQUIRE(errors.at(0)->getType() == CheckErrorType::NullPointerDereference);
+    REQUIRE(errors.at(0)->getLocation() == loc(5));
 }
 
 std::string intZero = R"(
@@ -96,8 +96,7 @@ TEST_CASE("Check doesn't mistake zero integer for nullptr pointer") {
     Path* path = createPath(ctx.get(), fn);
     pathGroup->exhaust();
 
-    const std::vector<CheckError>& errors = ctx->getErrors();
-    REQUIRE(errors.size() == 0);
+    REQUIRE(ctx->getErrors().size() == 0);
 }
 
 std::string simpleIf = R"(
@@ -121,8 +120,8 @@ TEST_CASE("Check handles transitive conditions") {
     Path* path = createPath(ctx.get(), fn);
     pathGroup->exhaust();
 
-    const std::vector<CheckError>& errors = ctx->getErrors();
-    REQUIRE(errors.size() == 2);
-    REQUIRE(errors.at(0).getType() == CheckErrorType::SEMark);
-    REQUIRE(errors.at(0).getLocation() == loc(7));
+    const std::vector<std::unique_ptr<CheckError>>& errors = ctx->getErrors();
+    REQUIRE(errors.size() == 1);
+    REQUIRE(errors.at(0)->getType() == CheckErrorType::SEMark);
+    REQUIRE(errors.at(0)->getLocation() == loc(7));
 }

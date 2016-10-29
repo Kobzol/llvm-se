@@ -1,11 +1,12 @@
-#include <instruction/InstructionDispatcher.h>
+#include "Path.h"
 
 #include <llvm/IR/BasicBlock.h>
-#include <util/Logger.h>
 
+#include "instruction/InstructionDispatcher.h"
+#include "solver/ExprTracker.h"
 #include "state/SymbolicState.h"
 #include "state/StateWrapper.h"
-#include "Path.h"
+#include "util/Logger.h"
 
 z3::context Path::CTX;
 
@@ -50,7 +51,16 @@ std::unique_ptr<Solver> Path::createSolver()
 
 void Path::dump(int priority)
 {
+    Logger::get().line(priority, "PATH %", this);
     this->getState()->dump(priority);
+
+    Logger::get().line(priority, "Conditions");
+    for (Expression* condition : this->pathConditions)
+    {
+        condition->dump(priority, 0);
+    }
+
+    Logger::get().line(priority, "------");
 }
 
 void Path::moveToNextInstruction()
@@ -96,7 +106,7 @@ void Path::setConditions(Solver& solver)
 std::unique_ptr<Path> Path::clone()
 {
     std::vector<ISymbolicState*> states = this->getState()->getStates();
-    states.pop_back();  // remove the local state, which will be copied
+    states.pop_back();  // remove the local state, it's copy will be passed to the cloned path
 
     std::unique_ptr<Path> cloned = std::make_unique<Path>(states,
                                                           this->localState->clone(),
@@ -111,10 +121,11 @@ std::unique_ptr<Path> Path::clone()
     return cloned;
 }
 
-void Path::mergeGlobalsTo(Path* path)
+void Path::copyTo(Path* path)
 {
     ISymbolicState* local = path->getState()->getLocalState();
 
+    // copy global updates
     for (auto& kv : this->getState()->getGlobalUpdates())
     {
         if (kv.second.getState() == local)
@@ -129,6 +140,23 @@ void Path::mergeGlobalsTo(Path* path)
         else
         {
             path->getState()->storeGlobalUpdate(kv.first, kv.second.getState(), kv.second.getExpr());
+        }
+    }
+
+    // copy expressions
+    for (Expression* expr : this->pathConditions)
+    {
+        ExprTracker tracker;
+        expr->markAddresses(&tracker);
+
+        for (llvm::Value* addr : tracker.getAddresses())
+        {
+            if (path->getState()->hasExpr(addr))
+            {
+                std::unique_ptr<Expression> clonedExpr = expr->deepClone(path->getState());
+                path->getState()->addExpr(addr, clonedExpr.get());
+                clonedExpr.release();
+            }
         }
     }
 }

@@ -31,6 +31,8 @@ void UndefinedLoadChecker::check(llvm::LoadInst* load, Path* path)
     // if the content of the memloc is undefined, the load is definitely invalid
     if (source->isUndefined())
     {
-        path->getGroup()->getContext()->addError(UndefinedLoadError(DebugUtil::get().getInstructionLocation(load)));
+        path->getGroup()->getContext()->addError(
+                std::make_unique<UndefinedLoadError>(DebugUtil::get().getInstructionLocation(load))
+        );
     }
 }

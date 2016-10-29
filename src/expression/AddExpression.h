@@ -11,5 +11,5 @@ public:
 
     virtual std::unique_ptr<Expression> deepClone(ISymbolicState* state) override;
 
-    virtual void dump(int priority) override;
+    virtual void dump(int priority = 0, int indent = 0) override;
 };

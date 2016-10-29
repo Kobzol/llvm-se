@@ -26,7 +26,7 @@ std::unique_ptr<Context> handleCode(std::string code)
 {
     testInit();
 
-    code = "void se_mark();\n" + trim(code);
+    code = "void se_mark(int id = 0);\n" + trim(code);
 
     std::unique_ptr<llvm::Module> moduleHolder = MemoryCompiler::get().compile(code);
     assert(moduleHolder.get());

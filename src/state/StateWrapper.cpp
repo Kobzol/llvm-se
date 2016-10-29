@@ -60,7 +60,7 @@ void StateWrapper::addExpr(llvm::Value* address, Expression* expression)
 
 void StateWrapper::dump(int priority)
 {
-
+    this->getLocalState()->dump(priority);
 }
 
 const std::vector<ISymbolicState*>& StateWrapper::getStates() const

@@ -9,6 +9,7 @@ namespace llvm {
 
 class Expression;
 class Path;
+class Solver;
 
 class Branch : public InstructionHandler
 {
@@ -18,4 +19,6 @@ public:
 private:
     llvm::Instruction* getFirstInstruction(llvm::BasicBlock* block);
     bool checkSatisfiability(Path* path, Expression* expr);
+
+    void setStateExpressions(Path& path, Solver& solver, Expression* condition) const;
 };

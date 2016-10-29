@@ -10,7 +10,7 @@ public:
     virtual bool isLoad() const override;
     MemoryLocation* getSource() const;
 
-    virtual void dump(int priority) override;
+    virtual void dump(int priority = 0, int indent = 0) override;
 
     virtual z3::expr createConstraint(Path* path) override;
     virtual std::string getIdentifier() override;

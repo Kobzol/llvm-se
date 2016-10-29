@@ -1,5 +1,6 @@
 #include "BinaryExpression.h"
 
+#include "solver/ExprTracker.h"
 #include "state/ISymbolicState.h"
 #include "util/Logger.h"
 
@@ -18,12 +19,12 @@ Expression* BinaryExpression::getRHS() const
     return this->rhs;
 }
 
-void BinaryExpression::dump(int priority)
+void BinaryExpression::dump(int priority, int indent)
 {
-    Logger::get().log(priority, "LHS: ");
-    this->lhs->dump(priority);
-    Logger::get().log(priority, "RHS: ");
-    this->rhs->dump(priority);
+    Logger::get().line(priority, indent, "LHS");
+    this->lhs->dump(priority, indent + 1);
+    Logger::get().line(priority, indent, "RHS");
+    this->rhs->dump(priority, indent + 1);
 }
 
 bool BinaryExpression::isConstant() const
@@ -44,4 +45,11 @@ std::unique_ptr<Expression> BinaryExpression::deepClone(ISymbolicState* state)
     }
 
     return std::unique_ptr<BinaryExpression>();
+}
+
+void BinaryExpression::markAddresses(ExprTracker* tracker) const
+{
+    tracker->addAddress(this->getValue());
+    this->getLHS()->markAddresses(tracker);
+    this->getRHS()->markAddresses(tracker);
 }

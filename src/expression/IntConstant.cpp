@@ -1,7 +1,8 @@
-#include <util/Logger.h>
 #include "IntConstant.h"
 
 #include "path/Path.h"
+#include "solver/ExprTracker.h"
+#include "util/Logger.h"
 
 IntConstant::IntConstant(llvm::Value* value, int64_t constant)
         : Expression(value), constant(constant)
@@ -9,9 +10,9 @@ IntConstant::IntConstant(llvm::Value* value, int64_t constant)
 
 }
 
-void IntConstant::dump(int priority)
+void IntConstant::dump(int priority, int indent)
 {
-    Logger::get().line(priority, "Int(%)", this->constant);
+    Logger::get().line(priority, indent, "Int % (%)", this->constant, this->getValue());
 }
 
 z3::expr IntConstant::createConstraint(Path* path)

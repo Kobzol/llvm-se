@@ -54,3 +54,16 @@ public:
 
     virtual void dump(int priority) const override;
 };
+
+class SEMarkError : public CheckError
+{
+public:
+    SEMarkError(CheckErrorType type, std::string location, int64_t id = 0);
+
+    int64_t getId() const;
+
+    virtual void dump(int priority) const;
+
+private:
+    int64_t id;
+};

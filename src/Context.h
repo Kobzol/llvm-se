@@ -23,14 +23,14 @@ public:
 
     void keepModule(std::unique_ptr<llvm::Module> module);
 
-    const std::vector<CheckError>& getErrors() const;
-    void addError(CheckError error);
+    const std::vector<std::unique_ptr<CheckError>>& getErrors() const;
+    void addError(std::unique_ptr<CheckError> error);
 
 private:
     std::vector<std::unique_ptr<Function>> functions;
     llvm::Module* activeModule;
 
-    std::vector<CheckError> errors;
+    std::vector<std::unique_ptr<CheckError>> errors;
 
     std::vector<std::unique_ptr<llvm::Module>> storedModules;
 };

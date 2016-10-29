@@ -22,7 +22,7 @@ void SymbolicState::dump(int priority)
 {
     for (auto& kv : this->expressions)
     {
-        kv.second->dump(priority);
+        kv.second->dump(priority, 0);
     }
 }
 

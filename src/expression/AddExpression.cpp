@@ -9,10 +9,10 @@ AddExpression::AddExpression(llvm::Value* value, Expression* lhs, Expression* rh
 
 }
 
-void AddExpression::dump(int priority)
+void AddExpression::dump(int priority, int indent)
 {
-    Logger::get().line(priority, "Add");
-    BinaryExpression::dump(priority);
+    Logger::get().line(priority, indent, "Add");
+    BinaryExpression::dump(priority, indent);
 }
 
 z3::expr AddExpression::createConstraint(Path* path)

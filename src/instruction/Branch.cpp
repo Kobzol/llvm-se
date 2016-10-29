@@ -6,8 +6,10 @@
 
 #include "expression/ExprBuilder.h"
 #include "expression/Expression.h"
+#include "expression/MemoryLocation.h"
 #include "path/Path.h"
 #include "path/PathGroup.h"
+#include "solver/ExprTracker.h"
 
 static std::vector<std::unique_ptr<llvm::CmpInst>> cmpStorage;
 
@@ -83,7 +85,30 @@ bool Branch::checkSatisfiability(Path* path, Expression* condition)
     solver->addConstraint(condition->createConstraint(path));
 
     path->setConditions(*solver);
-    // TODO
+    this->setStateExpressions(*path, *solver, condition);
 
     return solver->isSatisfiable();
+}
+
+void Branch::setStateExpressions(Path& path, Solver& solver, Expression* condition) const
+{
+    ExprTracker tracker;
+    condition->markAddresses(&tracker);
+    for (llvm::Value* address : tracker.getAddresses())
+    {
+        if (!path.getState()->hasExpr(address)) continue;
+
+        Expression* expr = path.getState()->getExpr(address);
+        if (expr->isMemoryLocation())
+        {
+            MemoryLocation* memLoc = static_cast<MemoryLocation*>(expr);
+            if (!memLoc->isUndefined())
+            {
+                z3::expr name = memLoc->createConstraint(&path);
+                z3::expr val = memLoc->getContent()->createConstraint(&path);
+
+                solver.addConstraint(name == val);
+            }
+        }
+    }
 }

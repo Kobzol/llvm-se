@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 
     for (auto& error : ctx.getErrors())
     {
-        error.dump(Logger::Prio::ERROR);
+        error->dump(Logger::Prio::ERROR);
     }
 
     return 0;

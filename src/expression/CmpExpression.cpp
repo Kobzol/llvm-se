@@ -9,10 +9,29 @@ CmpExpression::CmpExpression(llvm::Value* value, Expression* lhs, Expression* rh
 
 }
 
-void CmpExpression::dump(int priority)
+static std::string predicateToStr(llvm::CmpInst::Predicate predicate)
 {
-    Logger::get().line(priority, "Cmp");
-    BinaryExpression::dump(priority);
+    switch (predicate)
+    {
+
+        case llvm::CmpInst::ICMP_EQ: return "==";
+        case llvm::CmpInst::ICMP_NE: return "!=";
+        case llvm::CmpInst::ICMP_UGT:
+        case llvm::CmpInst::ICMP_SGT: return ">";
+        case llvm::CmpInst::ICMP_UGE:
+        case llvm::CmpInst::ICMP_SGE: return ">=";
+        case llvm::CmpInst::ICMP_ULT:
+        case llvm::CmpInst::ICMP_SLT: return "<";
+        case llvm::CmpInst::ICMP_ULE:
+        case llvm::CmpInst::ICMP_SLE: return "<=";
+        case llvm::CmpInst::BAD_ICMP_PREDICATE: return "BAD";
+    }
+}
+
+void CmpExpression::dump(int priority, int indent)
+{
+    Logger::get().line(priority, indent, "Cmp % (%)", predicateToStr(this->predicate), this->getValue());
+    BinaryExpression::dump(priority, indent);
 }
 
 z3::expr CmpExpression::createConstraint(Path* path)

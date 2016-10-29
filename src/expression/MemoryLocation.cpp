@@ -3,6 +3,7 @@
 #include <llvm/IR/Type.h>
 
 #include "path/Path.h"
+#include "solver/ExprTracker.h"
 #include "util/Logger.h"
 
 MemoryLocation::MemoryLocation(llvm::Value* value, Expression* content, uint64_t count)
@@ -11,9 +12,13 @@ MemoryLocation::MemoryLocation(llvm::Value* value, Expression* content, uint64_t
 
 }
 
-void MemoryLocation::dump(int priority)
+void MemoryLocation::dump(int priority, int indent)
 {
-    Logger::get().line(priority, "% (%)", this->getIdentifier(), this->getValue());
+    Logger::get().line(priority, indent, "Memloc % (%)", this->getIdentifier(), this->getValue());
+    if (!this->isUndefined())
+    {
+        this->getContent()->dump(priority, indent + 1);
+    }
 }
 
 Expression* MemoryLocation::getContent() const
@@ -53,7 +58,7 @@ z3::expr MemoryLocation::createConstraint(Path* path)
 {
     if (this->isUndefined())
     {
-        this->dump(1);
+        this->dump(1, 0);
         throw "1";
     }
 
@@ -63,4 +68,13 @@ z3::expr MemoryLocation::createConstraint(Path* path)
 bool MemoryLocation::isMemoryLocation() const
 {
     return true;
+}
+
+void MemoryLocation::markAddresses(ExprTracker* tracker) const
+{
+    tracker->addAddress(this->getValue());
+    if (!this->isUndefined())
+    {
+        this->getContent()->markAddresses(tracker);
+    }
 }

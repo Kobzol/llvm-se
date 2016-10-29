@@ -43,7 +43,7 @@ public:
 
     std::unique_ptr<Path> clone();
 
-    void mergeGlobalsTo(Path* path);
+    void copyTo(Path* path);
 
 private:
     static z3::context CTX;

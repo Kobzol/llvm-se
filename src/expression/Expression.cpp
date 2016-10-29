@@ -2,6 +2,7 @@
 
 #include <llvm/IR/Value.h>
 
+#include "solver/ExprTracker.h"
 #include "util/Logger.h"
 
 Expression::Expression(llvm::Value* value): value(value)
@@ -22,7 +23,7 @@ llvm::Type* Expression::getType() const
     return this->value->getType();
 }
 
-void Expression::dump(int priority)
+void Expression::dump(int priority, int indent)
 {
     if (Logger::get().checkPriority(priority))
     {
@@ -56,4 +57,9 @@ std::unique_ptr<Expression> Expression::clone()
 std::unique_ptr<Expression> Expression::deepClone(ISymbolicState* state)
 {
     return this->clone();
+}
+
+void Expression::markAddresses(ExprTracker* tracker) const
+{
+    tracker->addAddress(this->getValue());
 }

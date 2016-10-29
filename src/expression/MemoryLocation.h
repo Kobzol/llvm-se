@@ -14,11 +14,14 @@ public:
     uint64_t getCount() const;
 
     virtual z3::expr createConstraint(Path* path) override;
+
+    virtual void markAddresses(ExprTracker* tracker) const override;
+
     virtual bool isMemoryLocation() const override;
 
     virtual std::unique_ptr<Expression> clone() override = 0;
 
-    virtual void dump(int priority) override;
+    virtual void dump(int priority = 0, int indent = 0) override;
     virtual std::string getIdentifier() = 0;
 
 protected:

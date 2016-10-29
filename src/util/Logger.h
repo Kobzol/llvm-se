@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <z3++.h>
 
 #include "Singleton.h"
 
@@ -18,9 +19,9 @@ public:
     };
 
     template <typename... Targs>
-    bool line(int priority, std::string format, Targs... args)
+    bool line(int priority, int indent, std::string format, Targs... args) const
     {
-        if (this->log(priority, format, args...))
+        if (this->log(priority, indent, format, args...))
         {
             std::cerr << std::endl;
             return true;
@@ -29,16 +30,22 @@ public:
         return false;
     }
     template <typename... Targs>
-    bool line(std::string format, Targs... args)
+    bool line(int priority, std::string format, Targs... args) const
     {
-        return this->line(Logger::Prio::DEBUG, format, args...);
+        return this->line(priority, 0, format, args...);
+    }
+    template <typename... Targs>
+    bool line(std::string format, Targs... args) const
+    {
+        return this->line(Logger::DEBUG, 0, format, args...);
     }
 
     template <typename... Targs>
-    bool log(int priority, std::string format, Targs... args)
+    bool log(int priority, int indent, std::string format, Targs... args) const
     {
         if (this->isEnabled() && this->checkPriority(priority))
         {
+            this->indent(indent);
             this->printf(format.c_str(), args...);
             return true;
         }
@@ -46,26 +53,35 @@ public:
         return false;
     }
     template <typename... Targs>
-    bool log(std::string format, Targs... args)
+    bool log(int priority, std::string format, Targs... args) const
     {
-        return this->log(Logger::Prio::DEBUG, format, args...);
+        return this->log(priority, 0, format, args...);
+    }
+    template <typename... Targs>
+    bool log(std::string format, Targs... args) const
+    {
+        return this->log(Logger::DEBUG, 0, format, args...);
     }
 
+    void indent(int count) const;
+
     void setPriority(int priority);
-    bool checkPriority(int priority);
+    bool checkPriority(int priority) const;
 
     bool isEnabled() const;
     void enable();
     void disable();
 
+    void dump(z3::ast& ast) const;
+
 protected:
     Logger();
 
 private:
-    void printf(const char* format);
+    void printf(const char* format) const;
 
     template<typename T, typename... Targs>
-    void printf(const char* format, T value, Targs... args)
+    void printf(const char* format, T value, Targs... args) const
     {
         for (; *format != '\0'; format++)
         {

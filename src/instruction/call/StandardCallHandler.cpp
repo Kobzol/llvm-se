@@ -2,6 +2,7 @@
 
 #include <llvm/IR/Instructions.h>
 #include <expression/ExprBuilder.h>
+#include <util/Logger.h>
 
 #include "path/PathGroup.h"
 
@@ -29,15 +30,27 @@ void StandardCallHandler::handle(const CallInfo& info) const
         pg.exhaust();
     }
 
-    assert(pg.getPaths().size() == 1);
-    Path* p = pg.getPaths()[0].get();
-    p->mergeGlobalsTo(path);
+    auto& paths = pg.getPaths();
+    for (size_t i = 0; i < paths.size(); i++)
+    {
+        Path* p = paths.at(i).get();
+        Path* mergedPath = nullptr;
+        if (i > 0)
+        {
+            std::unique_ptr<Path> clonedPath = path->clone();
+            mergedPath = clonedPath.get();
+            path->getGroup()->addPath(std::move(clonedPath));
+        }
+        else mergedPath = path;
 
-    std::unique_ptr<Expression> retVal = p->getReturnValue()->deepClone(path->getState()->getLocalState());
-    path->getState()->addExpr(info.getInst(), retVal.get());
-    retVal.release();
+        p->copyTo(mergedPath);
 
-    CallHandler::handle(info);
+        std::unique_ptr<Expression> retVal = p->getReturnValue()->deepClone(mergedPath->getState()->getLocalState());
+        mergedPath->getState()->addExpr(info.getInst(), retVal.get());
+        retVal.release();
+
+        mergedPath->moveToNextInstruction();
+    }
 }
 
 void StandardCallHandler::addParameters(llvm::CallInst* call, Path* callingPath, Path* calledPath) const

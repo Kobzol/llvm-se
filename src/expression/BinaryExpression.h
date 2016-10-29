@@ -12,7 +12,9 @@ public:
 
     virtual bool isConstant() const override;
 
-    virtual void dump(int priority) override;
+    virtual void dump(int priority = 0, int indent = 0) override;
+
+    virtual void markAddresses(ExprTracker* tracker) const override;
 
 protected:
     BinaryExpression(llvm::Value* value, Expression* lhs, Expression* rhs);

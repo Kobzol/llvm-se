@@ -12,10 +12,10 @@ LoadExpression::LoadExpression(llvm::Value* value, MemoryLocation* source)
 
 }
 
-void LoadExpression::dump(int priority)
+void LoadExpression::dump(int priority, int indent)
 {
-    Logger::get().log(priority, "Load: ");
-    this->getSource()->dump(priority);
+    Logger::get().line(priority, indent, "Load (%)", this->getValue());
+    this->getSource()->dump(priority, indent + 1);
 }
 
 z3::expr LoadExpression::createConstraint(Path* path)

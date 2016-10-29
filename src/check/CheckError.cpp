@@ -57,3 +57,18 @@ void UndefinedLoadError::dump(int priority) const
 {
     Logger::get().line(priority, "Undefined load at %", this->getLocation());
 }
+
+SEMarkError::SEMarkError(CheckErrorType type, std::string location, int64_t id): CheckError(type, location), id(id)
+{
+
+}
+
+int64_t SEMarkError::getId() const
+{
+    return this->id;
+}
+
+void SEMarkError::dump(int priority) const
+{
+    Logger::get().line(priority, "SEMark at % (id %)", this->getLocation(), this->getId());
+}

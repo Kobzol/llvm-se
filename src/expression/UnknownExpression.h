@@ -7,7 +7,7 @@ class UnknownExpression : public Expression
 public:
     UnknownExpression(llvm::Value* value);
 
-    virtual void dump(int priority) override;
+    virtual void dump(int priority = 0, int indent = 0) override;
 
     virtual bool isUnknown() const override;
 

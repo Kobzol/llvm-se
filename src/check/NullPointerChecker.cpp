@@ -27,7 +27,9 @@ void NullPointerChecker::check(llvm::LoadInst* load, Path* path)
             IntConstant* constant = static_cast<IntConstant*>(pointer->getContent());
             if (constant->getConstant() == 0)
             {
-                path->getGroup()->getContext()->addError(NullDereferenceError(DebugUtil::get().getInstructionLocation(load)));
+                path->getGroup()->getContext()->addError(
+                        std::make_unique<NullDereferenceError>(DebugUtil::get().getInstructionLocation(load))
+                );
             }
         }
     }

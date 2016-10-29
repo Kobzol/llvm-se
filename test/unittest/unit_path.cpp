@@ -29,7 +29,7 @@ TEST_CASE("Path merge should copy the affected global expressions")
 
     std::unique_ptr<Path> p2 = std::make_unique<Path>(std::vector<ISymbolicState*>{ localState }, nullptr, nullptr);
     p2->getState()->storeGlobalUpdate(addr(1), localState, createInt(p2->getState(), 6));
-    p2->mergeGlobalsTo(p1.get());
+    p2->copyTo(p1.get());
 
     MemoryLocation* loc = static_cast<MemoryLocation*>(p1->getState()->getExpr(addr(1)));
     REQUIRE(static_cast<IntConstant*>(loc->getContent())->getConstant() == 6);

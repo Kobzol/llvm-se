@@ -9,6 +9,7 @@ namespace llvm {
     class Type;
 }
 
+class ExprTracker;
 class Path;
 class ISymbolicState;
 
@@ -31,7 +32,9 @@ public:
     virtual std::unique_ptr<Expression> clone();
     virtual std::unique_ptr<Expression> deepClone(ISymbolicState* state);
 
-    virtual void dump(int priority = 0);
+    virtual void dump(int priority = 0, int indent = 0);
+
+    virtual void markAddresses(ExprTracker* tracker) const;
 
 private:
     llvm::Value* value;

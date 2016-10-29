@@ -113,12 +113,12 @@ void Context::keepModule(std::unique_ptr<llvm::Module> module)
     this->storedModules.push_back(std::move(module));
 }
 
-const std::vector<CheckError>& Context::getErrors() const
+const std::vector<std::unique_ptr<CheckError>>& Context::getErrors() const
 {
     return this->errors;
 }
 
-void Context::addError(CheckError error)
+void Context::addError(std::unique_ptr<CheckError> error)
 {
-    this->errors.push_back(error);
+    this->errors.push_back(std::move(error));
 }
