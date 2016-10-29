@@ -41,3 +41,15 @@ std::unique_ptr<Expression> LoadExpression::clone()
 {
     return std::make_unique<LoadExpression>(this->getValue(), this->getSource());
 }
+
+std::unique_ptr<Expression> LoadExpression::deepClone(ISymbolicState* state)
+{
+    std::unique_ptr<Expression> source = this->getSource()->deepClone(state);
+    state->addExpr(source->getValue(), source.get());
+    source.release();
+
+    assert(state->hasExpr(this->getSource()->getValue()));
+
+    return std::make_unique<LoadExpression>(this->getValue(),
+                                            static_cast<MemoryLocation*>(state->getExpr(this->getSource()->getValue())));
+}

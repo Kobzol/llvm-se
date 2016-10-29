@@ -1,5 +1,7 @@
 #include "Variable.h"
 
+#include "state/ISymbolicState.h"
+
 static int counter = 0;
 
 Variable::Variable(llvm::Value* value, uint64_t count)
@@ -36,4 +38,22 @@ std::unique_ptr<Expression> Variable::clone()
     std::unique_ptr<Expression> ret = std::unique_ptr<Expression>(var.get());
     var.release();
     return ret;
+}
+
+std::unique_ptr<Expression> Variable::deepClone(ISymbolicState* state)
+{
+    if (this->isUndefined())
+    {
+        return std::make_unique<Variable>(this->getValue(), this->getCount());
+    }
+
+    std::unique_ptr<Expression> content = this->getContent()->deepClone(state);
+    state->addExpr(content->getValue(), content.get());
+    content.release();
+
+    std::unique_ptr<Expression> var = std::make_unique<Variable>(this->getValue(),
+                                      this->getCount(),
+                                      state->getExpr(this->getContent()->getValue()));
+    (static_cast<Variable*>(var.get()))->setIdentifier(this->getIdentifier());
+    return var;
 }

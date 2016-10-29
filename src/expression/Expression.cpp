@@ -8,6 +8,10 @@ Expression::Expression(llvm::Value* value): value(value)
 {
 
 }
+Expression::~Expression()
+{
+
+}
 
 llvm::Value* Expression::getValue() const
 {
@@ -47,4 +51,9 @@ std::unique_ptr<Expression> Expression::clone()
 {
     assert(0);
     return std::unique_ptr<Expression>();
+}
+
+std::unique_ptr<Expression> Expression::deepClone(ISymbolicState* state)
+{
+    return this->clone();
 }

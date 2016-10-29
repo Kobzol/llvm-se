@@ -5,6 +5,8 @@ std::unique_ptr<PathGroup> pathGroup;
 static std::unique_ptr<ISymbolicState> globalStateHolder;
 static std::string FILENAME = "input.cc";
 
+static int intAddr = 100;
+
 void testInit()
 {
     if (!llvmCtx)
@@ -46,9 +48,16 @@ Path* createPath(Context* context, Function* function)
                                                      pathGroup.get(),
                                                      function->getFirstInstruction()));
 }
-Path* createEmptyPath()
+
+std::unique_ptr<Path> createEmptyPath()
 {
-    return new Path(std::vector<ISymbolicState*>(), nullptr, nullptr);
+    return std::make_unique<Path>(std::vector<ISymbolicState*>(), nullptr, nullptr);
+}
+IntConstant* createInt(ISymbolicState* state, int64_t value)
+{
+    llvm::Value* address = addr(intAddr++);
+    state->addExpr(address, new IntConstant(address, value));
+    return static_cast<IntConstant*>(state->getExpr(address));
 }
 
 std::string loc(int line)

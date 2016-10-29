@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "CallHandler.h"
 
 class LLVMCallHandler : public CallHandler

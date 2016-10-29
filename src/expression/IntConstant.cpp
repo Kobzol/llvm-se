@@ -28,3 +28,8 @@ int64_t IntConstant::getConstant() const
 {
     return this->constant;
 }
+
+std::unique_ptr<Expression> IntConstant::deepClone(ISymbolicState* state)
+{
+    return std::make_unique<IntConstant>(this->getValue(), this->constant);
+}

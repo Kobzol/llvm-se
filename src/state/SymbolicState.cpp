@@ -30,7 +30,7 @@ void SymbolicState::store(llvm::Value* address, Expression* expression)
 {
     if (this->memoryMap.count(expression)) return;
     this->memoryMap.insert(expression);
-    this->memory.push_back(std::unique_ptr<Expression>(expression));
+    this->memory.emplace_back(expression);
 }
 
 std::unique_ptr<ISymbolicState> SymbolicState::clone()
@@ -40,13 +40,9 @@ std::unique_ptr<ISymbolicState> SymbolicState::clone()
     for (auto& kv : this->expressions)
     {
         Expression* expr = kv.second;
-        if (kv.second->isMemoryLocation())
-        {
-            std::unique_ptr<Expression> exprClone = kv.second->clone();
-            expr = exprClone.get();
-            exprClone.release();
-        }
-        clone->addExpr(kv.first, expr);
+        std::unique_ptr<Expression> clonedExpr = expr->deepClone(clone.get());
+        clone->addExpr(kv.first, clonedExpr.get());
+        clonedExpr.release();
     }
 
     return clone;

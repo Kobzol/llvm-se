@@ -34,3 +34,14 @@ z3::expr CmpExpression::createConstraint(Path* path)
 
     return z3::expr(path->getContext());
 }
+
+std::unique_ptr<Expression> CmpExpression::deepClone(ISymbolicState* state)
+{
+    BinaryExpression::deepClone(state);
+
+    return std::make_unique<CmpExpression>(this->getValue(),
+                                           state->getExpr(this->getLHS()->getValue()),
+                                           state->getExpr(this->getRHS()->getValue()),
+                                           this->predicate
+    );
+}

@@ -13,8 +13,6 @@ public:
 
     uint64_t getCount() const;
 
-    MemoryLocation* getOrigin();
-
     virtual z3::expr createConstraint(Path* path) override;
     virtual bool isMemoryLocation() const override;
 

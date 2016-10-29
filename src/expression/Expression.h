@@ -10,11 +10,13 @@ namespace llvm {
 }
 
 class Path;
+class ISymbolicState;
 
 class Expression
 {
 public:
     Expression(llvm::Value* value);
+    virtual ~Expression();
 
     llvm::Value* getValue() const;
     llvm::Type* getType() const;
@@ -27,6 +29,7 @@ public:
     virtual bool isUnknown() const;
 
     virtual std::unique_ptr<Expression> clone();
+    virtual std::unique_ptr<Expression> deepClone(ISymbolicState* state);
 
     virtual void dump(int priority = 0);
 

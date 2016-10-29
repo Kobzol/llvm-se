@@ -22,3 +22,8 @@ bool UnknownExpression::isUnknown() const
 {
     return true;
 }
+
+std::unique_ptr<Expression> UnknownExpression::deepClone(ISymbolicState* state)
+{
+    return std::make_unique<UnknownExpression>(this->getValue());
+}

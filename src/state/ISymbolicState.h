@@ -15,6 +15,8 @@ class Solver;
 class ISymbolicState
 {
 public:
+    virtual ~ISymbolicState();
+
     virtual bool hasExpr(llvm::Value* address) const = 0;
     virtual Expression* getExpr(llvm::Value* address) const = 0;
     virtual void addExpr(llvm::Value* address, Expression* expression) = 0;

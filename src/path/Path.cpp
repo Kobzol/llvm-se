@@ -113,7 +113,6 @@ std::unique_ptr<Path> Path::clone()
 
 void Path::mergeGlobalsTo(Path* path)
 {
-    // TODO: release the std::unique_ptrs in this path when merging with the given path!!!
     ISymbolicState* local = path->getState()->getLocalState();
 
     for (auto& kv : this->getState()->getGlobalUpdates())
@@ -121,7 +120,11 @@ void Path::mergeGlobalsTo(Path* path)
         if (kv.second.getState() == local)
         {
             MemoryLocation* src = static_cast<MemoryLocation*>(local->getExpr(kv.first));
-            src->setContent(kv.second.getExpr());
+            std::unique_ptr<Expression> cloned = kv.second.getExpr()->deepClone(local);
+
+            local->addExpr(cloned->getValue(), cloned.get());
+            src->setContent(cloned.get());
+            cloned.release();
         }
         else
         {

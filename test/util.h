@@ -17,7 +17,9 @@ extern std::unique_ptr<PathGroup> pathGroup;
 void testInit();
 std::unique_ptr<Context> handleCode(std::string code);
 Path* createPath(Context* context, Function* function);
-Path* createEmptyPath();
+
+std::unique_ptr<Path> createEmptyPath();
+IntConstant* createInt(ISymbolicState* state, int64_t value);
 
 bool check_int_eq(Path* path, std::string name, int64_t value);
 

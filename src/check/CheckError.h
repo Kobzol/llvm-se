@@ -16,6 +16,7 @@ class CheckError
 {
 public:
     CheckError(CheckErrorType type, std::string location);
+    virtual ~CheckError();
 
     std::string getLocation() const;
 

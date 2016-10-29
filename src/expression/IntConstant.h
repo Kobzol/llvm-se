@@ -16,6 +16,8 @@ public:
     virtual z3::expr createConstraint(Path* path) override;
     virtual bool isConstant() const override;
 
+    virtual std::unique_ptr<Expression> deepClone(ISymbolicState* state) override;
+
 private:
     int64_t constant;
 };

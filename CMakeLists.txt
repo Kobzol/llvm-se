@@ -8,7 +8,7 @@ set(CLANG_DIR "/home/kobzol/libraries/llvm3.9-binaries")
 set(Z3_DIR "/home/kobzol/libraries/z3/build/build")
 
 set(CMAKE_CXX_COMPILER "${CLANG_DIR}/bin/clang++")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++14 -fno-rtti -Wsign-compare -Wall -pedantic -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fsanitize=address -fno-omit-frame-pointer -std=c++14 -fno-rtti -Wsign-compare -Wall -pedantic -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS")
 
 include_directories(${CLANG_DIR}/include)
 link_directories(${CLANG_DIR}/lib)
@@ -94,10 +94,12 @@ add_library(src
     src/util/compile/MemoryCompiler.cpp
     src/instruction/GetElementPtr.cpp
     src/expression/IndexExpression.cpp
+    src/state/ISymbolicState.cpp
     src/state/SymbolicState.cpp
     src/state/StateWrapper.cpp
     src/path/PathGroup.cpp
     src/instruction/InstructionDispatcher.cpp
+    src/instruction/InstructionHandler.cpp
     src/expression/Variable.cpp
     src/instruction/Return.cpp
     src/check/NullPointerChecker.cpp
@@ -109,7 +111,8 @@ add_library(src
     src/instruction/call/CallHandler.cpp
     src/instruction/call/LLVMCallHandler.cpp
     src/instruction/call/SEMarkCallHandler.cpp
-    src/instruction/call/StandardCallHandler.cpp)
+    src/instruction/call/StandardCallHandler.cpp
+)
 
 # LLVM pass
 add_library(llvmSE SHARED RegisterPass.cpp)
@@ -135,7 +138,7 @@ target_link_libraries(unittest ${Z3_LIB})
 
 # Direct run
 set (RUN_SOURCE_FILES
-        DirectRun.cpp
+    DirectRun.cpp
 )
 add_executable(direct ${RUN_SOURCE_FILES})
 target_link_libraries(direct src)

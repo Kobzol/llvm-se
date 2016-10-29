@@ -28,6 +28,11 @@ const std::string& CallInfo::getDemangledName() const
     return demangledName;
 }
 
+CallHandler::~CallHandler()
+{
+
+}
+
 void CallHandler::handle(const CallInfo& info) const
 {
     info.getPath()->moveToNextInstruction();

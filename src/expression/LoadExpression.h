@@ -16,4 +16,5 @@ public:
     virtual std::string getIdentifier() override;
 
     virtual std::unique_ptr<Expression> clone() override;
+    virtual std::unique_ptr<Expression> deepClone(ISymbolicState* state) override;
 };

@@ -64,15 +64,3 @@ bool MemoryLocation::isMemoryLocation() const
 {
     return true;
 }
-
-MemoryLocation* MemoryLocation::getOrigin()
-{
-    MemoryLocation* loc = this;
-
-    while (loc->getContent() != nullptr && loc->getContent()->isMemoryLocation())
-    {
-        loc = static_cast<MemoryLocation*>(loc->getContent());
-    }
-
-    return loc;
-}

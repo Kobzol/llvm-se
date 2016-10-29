@@ -6,6 +6,10 @@ CheckError::CheckError(CheckErrorType type, std::string location) : type(type), 
 {
 
 }
+CheckError::~CheckError()
+{
+
+}
 
 CheckErrorType CheckError::getType() const
 {

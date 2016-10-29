@@ -29,6 +29,8 @@ private:
 class CallHandler
 {
 public:
+    virtual ~CallHandler();
+
     virtual bool shouldHandle(const CallInfo& info) const = 0;
     virtual void handle(const CallInfo& info) const;
 };
