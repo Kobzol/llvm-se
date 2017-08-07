@@ -1,20 +1,26 @@
 #include "MemoryLocation.h"
 
+#include <llvm/IR/Value.h>
 #include <llvm/IR/Type.h>
 
 #include "path/Path.h"
 #include "solver/ExprTracker.h"
 #include "util/Logger.h"
 
-MemoryLocation::MemoryLocation(llvm::Value* value, Expression* content, uint64_t count)
-        : Expression(value), content(content), count(count)
+MemoryLocation::MemoryLocation(llvm::Value* value, Expression* content, size_t count)
+        : Expression(value), content(content), count(count),
+          size(value->getType()->getContainedType(0)->getPrimitiveSizeInBits())
 {
 
 }
 
 void MemoryLocation::dump(int priority, int indent)
 {
-    Logger::get().line(priority, indent, "Memloc % (%)", this->getIdentifier(), this->getValue());
+    Logger::get().line(priority, indent, "Memloc % of size % (%)",
+                       this->getIdentifier(),
+                       this->getTotalSize(),
+                       this->getValue()
+    );
     if (!this->isUndefined())
     {
         this->getContent()->dump(priority, indent + 1);
@@ -30,9 +36,13 @@ void MemoryLocation::setContent(Expression* content)
     this->content = content;
 }
 
-uint64_t MemoryLocation::getCount() const
+size_t MemoryLocation::getCount() const
 {
     return this->count;
+}
+size_t MemoryLocation::getTotalSize() const
+{
+    return this->getCount() * this->size;
 }
 
 bool MemoryLocation::isUndefined() const

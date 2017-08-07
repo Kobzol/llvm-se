@@ -8,7 +8,7 @@ set(CLANG_DIR "/home/kobzol/libraries/llvm3.9-binaries")
 set(Z3_DIR "/home/kobzol/libraries/z3/build/build")
 
 set(CMAKE_CXX_COMPILER "${CLANG_DIR}/bin/clang++")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fsanitize=address -fno-omit-frame-pointer -fno-limit-debug-info -std=c++14 -fno-rtti -Wsign-compare -Wall -pedantic -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fno-omit-frame-pointer -fno-limit-debug-info -std=c++14 -fno-rtti -Wsign-compare -Wall -pedantic -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS")
 
 include_directories(${CLANG_DIR}/include)
 link_directories(${CLANG_DIR}/lib)

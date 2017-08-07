@@ -7,7 +7,7 @@
 class IntConstant : public Expression
 {
 public:
-    IntConstant(llvm::Value* value, int64_t constant);
+    IntConstant(llvm::Value* value, int64_t constant, size_t size);
 
     virtual void dump(int priority = 0, int indent = 0) override;
 
@@ -20,4 +20,5 @@ public:
 
 private:
     int64_t constant;
+    size_t size;
 };

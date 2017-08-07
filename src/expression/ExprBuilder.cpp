@@ -67,11 +67,13 @@ Expression* ExprBuilder::buildConstant(llvm::Constant* constant)
 
     if (auto* intConstant = llvm::dyn_cast<llvm::ConstantInt>(constant))
     {
-        return this->add(new IntConstant(constant, this->createIntConstant(intConstant)));
+        return this->add(new IntConstant(constant,
+                                         this->createIntConstant(intConstant),
+                                         constant->getType()->getPrimitiveSizeInBits()));
     }
     else if (llvm::isa<llvm::ConstantPointerNull>(constant))
     {
-        return this->add(new IntConstant(constant, 0));
+        return this->add(new IntConstant(constant, 0, 64));
     }
 
     Logger::get().line("Unknown constant");

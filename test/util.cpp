@@ -56,7 +56,7 @@ std::unique_ptr<Path> createEmptyPath()
 IntConstant* createInt(ISymbolicState* state, int64_t value)
 {
     llvm::Value* address = addr(intAddr++);
-    state->addExpr(address, new IntConstant(address, value));
+    state->addExpr(address, new IntConstant(address, value, 64));
     return static_cast<IntConstant*>(state->getExpr(address));
 }
 

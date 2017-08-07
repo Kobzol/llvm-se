@@ -5,18 +5,18 @@
 class MemoryLocation : public Expression
 {
 public:
-    MemoryLocation(llvm::Value* value, Expression* content, uint64_t count);
+    MemoryLocation(llvm::Value* value, Expression* content, size_t count);
 
     bool isUndefined() const;
     Expression* getContent() const;
     virtual void setContent(Expression* content);
 
-    uint64_t getCount() const;
+    size_t getCount() const;
+    size_t getTotalSize() const;
 
     virtual z3::expr createConstraint(Path* path) override;
 
     virtual void markAddresses(ExprTracker* tracker) const override;
-
     virtual bool isMemoryLocation() const override;
 
     virtual std::unique_ptr<Expression> clone() override = 0;
@@ -29,5 +29,6 @@ protected:
 
 private:
     Expression* content;
-    uint64_t count;
+    size_t count;
+    size_t size;
 };

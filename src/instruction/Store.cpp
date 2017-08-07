@@ -37,6 +37,9 @@ void Store::handle(Path* path, llvm::Instruction* instruction)
         copy.release();
     }
 
+    assignment->dump(0);
+    target->dump(0);
+
     assert(target->isMemoryLocation());
     static_cast<MemoryLocation*>(target)->setContent(assignment);
 
